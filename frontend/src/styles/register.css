@@ -21,11 +21,11 @@ body {
 
 .auth-box {
   background: rgba(245, 244, 244, 0);
-  padding: 2rem;
+ 
   border-radius: 10px;
   width: 400px;
   height: 480px;
-  margin: 100px;
+  margin: 50px;
   text-align: center;
   position: relative;
   
