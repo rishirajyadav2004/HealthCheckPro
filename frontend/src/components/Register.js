@@ -154,11 +154,11 @@ const Register = () => {
 
           <div className="social-signup">
             <button className="google-btn" onClick={() => window.open("https://accounts.google.com/signup", "_blank")}>
-              <img src={googleIcon} alt="Google" /> Sign up with Google
+              <img src={googleIcon} alt="Google" /> Create Account with Google
             </button>
 
             <button className="facebook-btn" onClick={() => window.open("https://www.facebook.com/r.php", "_blank")}>
-              <img src={facebookIcon} alt="Facebook" /> Sign up with Facebook
+              <img src={facebookIcon} alt="Facebook" /> Create Account with Facebook
             </button>
           </div>
 
