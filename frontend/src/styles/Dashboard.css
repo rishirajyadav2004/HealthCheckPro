@@ -1,0 +1,326 @@
+
+
+/* Dashboard Container */
+.dashboard-container {
+  font-family: 'Nunito', sans-serif;
+  background-color: #aceffd;
+  color: white;
+  min-height: 100vh;
+  font-weight: 900;
+}
+
+/* ✅ Navigation Bar */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2a3437;
+  padding: 10px 20px;
+  color: white;
+  position: relative;
+}
+
+
+
+.logo {
+  display: flex;
+  align-items: center; /* Ensures text and logo align properly */
+  
+}
+
+.nav-logo {
+  height: 70px !important; /* Increase size */
+  width: auto !important; /* Maintain aspect ratio */
+  max-height: 180px !important; /* Prevent excessive resizing */
+}
+
+
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a,
+.logout-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-links a:hover {
+  color: #1abc9c; /* ✅ Adds hover effect */
+}
+
+.logout-btn {
+  background: red;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.3s ease-in-out;
+}
+
+.logout-btn:hover {
+  background: darkred;
+}
+
+/* ✅ Mobile Navigation */
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* ✅ Mobile Styles */
+@media (max-width: 768px) {
+  .nav-links {
+      display: none; /* ✅ Initially hidden */
+      flex-direction: column;
+      background: #34495e;
+      position: absolute;
+      right: 0;
+      top: 60px;
+      width: 220px;
+      padding: 15px;
+      text-align: left;
+      border-radius: 10px 0 0 10px;
+      box-shadow: -3px 3px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease-in-out;
+  }
+
+  .nav-links.open {
+      display: flex;
+      transform: translateX(0);
+  }
+
+  .menu-toggle {
+      display: block;
+  }
+}
+
+
+/* ✅ User Profile */
+.user-profile {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Aligns icon to the left */
+  padding: 20px;
+  background: url('../assets/image2.jpeg') no-repeat center center/cover;
+  color: rgb(180, 197, 197);
+  min-height: 200px;
+  gap: 20px; /* Space between icon and details */
+}
+
+/* ✅ Profile Icon */
+.profile-icon {
+  font-size: 100px; /* Large, stylish icon */
+  color: #192036;
+  flex-shrink: 0; /* Prevents shrinking on smaller screens */
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
+  100% { background-position: 0% 50%; }
+}
+
+.profile-info {
+  display: flex;
+  flex-wrap: wrap; /* Ensures wrapping on smaller screens */
+  align-items: center;
+  justify-content: center; /* Centers content */
+  gap: 15px; /* Space between items */
+  background: linear-gradient(135deg, 
+      #98d2dec9,  /* Soft Sky Blue */
+      #5a9dd482,  /* Light White Blue */
+      #54bcbe77,  /* Soft Lavender */
+      #b7d0e68e,  /* Pastel Aqua */
+      #cfd4d349   /* Almost White */
+  ); /* Initial gradient */
+  background-size: 500% 500%; /* Enables smooth animation */
+  padding: 20px 25px; /* Adds padding for better spacing */
+  border-radius: 15px;
+  font-size: 1.2rem;
+  font-family: "Nunito", sans-serif;
+  font-weight: 600;
+  color: #333; /* Darker text for better readability */
+  width: fit-content; /* Adjusts width to content */
+  max-width: 90%; /* Prevents overflowing */
+  transition: all 0.3s ease-in-out; /* Smooth resizing transition */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  animation: gradientAnimation 6s ease infinite; /* ✅ Smooth color transition */
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .profile-info {
+    flex-direction: column; /* Stack items in smaller screens */
+    text-align: center;
+    width: 100%; /* Ensures it doesn't shrink too much */
+    padding: 20px; /* Adjust padding for readability */
+  }
+}
+
+
+.user-name{
+  color: rgb(37, 49, 59);
+  font-size: 60px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Individual Text Elements */
+.profile-info p {
+  margin: 0;
+  font-weight: 400;
+  color: #fff;
+}
+
+/* ✅ Text Styling */
+.profile-info h2,
+.profile-info span {
+  display: flex;
+  margin: 0;
+  font-weight: 400;
+}
+
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .user-profile {
+    display: flex;
+    flex-direction: column;
+    
+   
+  }
+
+  .profile-info {
+    flex-direction: column;
+    white-space: normal; /* Allows wrapping */
+    text-align: center;
+  }
+}
+
+/* ✅ Responsive Profile */
+@media (min-width: 600px) {
+  .profile-info {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+  }
+}
+
+
+/* Health Categories */
+.health-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px;
+}
+
+.category-card {
+  background: #2B2D42;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 10px;
+  text-align: center;
+  width: 180px;
+  transition: 0.3s;
+}
+
+.category-card:hover {
+  background: #44475A;
+}
+
+.category-icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .nav-links {
+      display: none;
+  }
+
+  .top-nav {
+      display: flex;
+      justify-content: space-between;
+  }
+
+  .menu-icon {
+      display: block;
+      font-size: 24px;
+      cursor: pointer;
+  }
+
+  .profile-info {
+      width: 90%;
+  }
+
+  .health-categories {
+      flex-direction: column;
+      align-items: center;
+  }
+}
+
+.challenge-section {
+  text-align: center;
+  background: url('../assets/health-check.svg') no-repeat center center/cover;
+  color: rgb(16, 35, 37);
+  padding: 180px;
+  font-size: larger;
+  font-weight:700;
+  background-size: 50%;
+  border-radius: 10px;
+  margin-top: 100px;
+  margin-bottom: 80px;
+  box-shadow: 0px 4px 8px rgba(65, 25, 25, 0.2);
+}
+
+.challenge-sub {
+  background-color: rgba(204, 239, 239, 0.507);
+  display: inline-block;  /* Shrinks to fit text */
+  padding: 8px 12px;  /* Padding for better spacing */
+  border-radius: 8px;  /* Smooth rounded edges */
+  animation: colorChange 3s infinite alternate; /* Motion effect */
+}
+
+@keyframes colorChange {
+  0% { background-color: rgba(255, 255, 255, 0.853); }
+  50% { background-color: rgba(240, 233, 233, 0.726); }
+  100% { background-color: rgba(251, 249, 249, 0.867); }
+}
+
+.challenge-section h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.challenge-section p {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.start-btn {
+  background: rgb(88, 231, 244);
+  color: #000000;
+  border: none;
+  padding: 12px 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.start-btn:hover {
+  background: #388E3C;
+  color: white;
+}

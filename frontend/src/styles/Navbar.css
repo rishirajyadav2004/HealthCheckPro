@@ -1,0 +1,107 @@
+/* Default Navbar Styles (Dashboard) */
+.dashboard-navbar {
+    background: linear-gradient(to right, #86c8fd, #f0f6fa);
+    border-bottom: 0px solid #64B5F6;
+    padding: 12px 20px;
+    transition: background 0.5s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/* Logo */
+.dashboard-navbar .logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Navigation Links */
+.dashboard-navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.dashboard-navbar .nav-links li {
+    margin: 0 10px;
+}
+
+.dashboard-navbar .nav-links a {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.dashboard-navbar .nav-links a:hover {
+    color: #007bff;
+}
+
+/* Profile Icon */
+.dashboard-navbar .profile-icon a {
+    font-size: 22px;
+}
+
+/* Logout Button */
+.dashboard-navbar .logout-btn {
+    background: #ff4b5c;
+    border: none;
+    padding: 6px 12px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.dashboard-navbar .logout-btn:hover {
+    background: #d43f4b;
+}
+
+/* 🔹 Responsive Navbar - Mobile View */
+@media screen and (max-width: 768px) {
+    .dashboard-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px;
+    }
+
+    .dashboard-navbar .logo {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    /* Hide Nav Links Initially (For Mobile) */
+    .dashboard-navbar .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        position: absolute;
+        top: 50px;
+        left: 0;
+        padding: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Show Nav Links When Open */
+    .dashboard-navbar .nav-links.active {
+        display: flex;
+    }
+
+    .dashboard-navbar .nav-links li {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    /* Hamburger Menu */
+    .menu-icon {
+        display: block;
+        cursor: pointer;
+        font-size: 24px;
+        position: absolute;
+        right: 20px;
+        top: 15px;
+    }
+}

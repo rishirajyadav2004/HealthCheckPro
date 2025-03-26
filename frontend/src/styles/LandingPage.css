@@ -1,185 +1,378 @@
-/* ✅ Global Reset & Smooth Font */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
 
-
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    
-    transition: all 0.4s ease-in-out;
-    font-family: 'Nunito', sans-serif;
-  }
+  font-family: 'Nunito', sans-serif;
+}
+
+
+
+/* General Styles */
+body {
   
-  /* ✅ Full-Screen Background with Animated Gradient */
-  .landing-page {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    min-height: 150vh;
-    background: linear-gradient(-45deg, #4CAF50, #2E7D32, #388E3C, #1B5E20);
-    background-size: 400% 400%;
-    animation: gradientBG 8s ease infinite;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-  }
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
   
-  /* ✅ Background Animation */
-  @keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+}
+
+/* Navbar */
+.navbar {
+  padding: 1px;
+  font-size: 20px;
+}
+.navbar-logo {
+  background-color: white;  /* White background */
+  padding: 5px;  /* Add some spacing */
+  border-radius: 5px;  /* Slightly rounded corners */
+}
+
+.custom-navbar {
+  background: linear-gradient(to right, #86c8fd, #f0f6fa); /* Light blue to light white */
+  border-bottom: 0px solid #64B5F6; /* Adds a sleek blue border */
+  padding: 10px 0; /* Adjusts navbar padding */
+  transition: background 0.5s ease-in-out;
+}
+
+.custom-navbar .navbar-brand {
+  font-weight: bold;
+  font-size: 22px; /* Adjust font size */
+  color: #0D47A1 !important; /* Dark blue text */
+  display: flex;
+  align-items: center; /* Align text with logo */
+  gap: 10px; /* Space between logo and text */
+}
+
+.custom-navbar .navbar-brand img {
+  width: 95px; /* Adjust logo size */
+  height: 85px;
+}
+
+.custom-navbar .nav-link {
+  color: #0D47A1 !important;
+  font-weight: 500;
+  font-size: 18px; /* Adjust link font size */
+  transition: color 0.3s ease-in-out;
+  padding: 8px 15px; /* Spacing for better clickability */
+}
+
+.custom-navbar .nav-link:hover {
+  color: #1565C0 !important; /* Slightly darker blue on hover */
+}
+
+
+/* Carousel Styling */
+.carousel-container {
+  width: 90%;
+  margin: auto;
+  height: 50vh; /* Set height to 50% of the viewport */
+  overflow: hidden;
+}
+
+.carousel {
+  width: 100%;
+  height: 100%; /* Ensure it takes up the full container */
+  border-radius: 15px;
+}
+
+.carousel img {
+  object-fit: cover; /* Ensures images fill the carousel without distortion */
+  height: 100%; /* Fit exactly into the 50vh height */
+  width: 100%; /* Full width */
+  border-radius: 15px;
+}
+
+/* Features Section */
+h2 {
+  color: #007bff;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  transition: transform 0.3s ease-in-out;
+  height: 100%; /* Ensure all cards are equal height */
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  height: 200px; /* Set fixed height for images */
+  object-fit: cover;
+}
+
+.card-body {
+  flex-grow: 1; /* Makes the text section take up equal space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* FAQ Section Styling */
+.accordion-header i {
+  font-size: 1.3rem; /* Make icons slightly larger */
+  color: #007bff; /* Make them match the theme */
+}
+
+.accordion-header {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.accordion-item {
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.accordion-body {
+  background-color: #f1f1f1;
+  border-left: 4px solid #007bff;
+  padding: 15px;
+}
+
+
+/* Footer Styling */
+.footer {
+  background: linear-gradient(to right, #cce5ff, #ffffff); /* Light blue to white */
+  padding: 40px 0;
+  color: #333;
+  font-size: 14px;
+  text-align: center;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 20px 10%;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 20px;
+}
+
+.footer-section h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin: 5px 0;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.footer-section ul li:hover {
+  color: #007bff; /* Light blue hover effect */
+}
+
+.footer-icons {
+  margin-top: 10px;
+}
+
+.footer-icons i {
+  font-size: 20px;
+  color: #333;
+  margin: 0 8px;
+  transition: color 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.footer-icons i:hover {
+  color: #007bff;
+}
+
+.footer-bottom {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.footer-bottom a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.footer-bottom a:hover {
+  text-decoration: underline;
+}
+
+/* Footer Text Styling */
+.footer-text {
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  margin-top: 10px;
+}
+
+/* Transparent Footer Buttons */
+.footer-button {
+  background: transparent; /* Transparent background */
+  border: none;
+  color: #1976D2; /* Blue text */
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out;
+}
+
+.footer-button:hover {
+  color: #0D47A1; /* Darker blue on hover */
+  text-decoration: underline;
+}
+
+
+
+
+
+
+
+.hero-section {
+  background: linear-gradient(135deg, #4A90E2, #145DA0); /* Gradient background */
+  color: white;
+  padding: 100px 0;
   
-  /* ✅ Dark Mode Styling */
-  .dark-mode {
-    background: #121212;
-    color: #fff;
+  text-align: center;
+  position: relative;
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: white;
+  clip-path: ellipse(50% 100% at 50% 100%);
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-get-started, .btn-sign-in {
+  font-size: 1.1rem;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 30px;
+  transition: all 0.1s ease-in-out;
+}
+
+.btn-get-started {
+  background: #0a0a90;
+  color: white;
+}
+
+.btn-get-started:hover {
+  background: #a0b3de;
+  transform: scale(1.05);
+}
+
+.btn-sign-in {
+  background: #0b1f36;
+  color: white;
+}
+
+.btn-sign-in:hover {
+  background: #000000;
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
   }
-  
-  /* ✅ Navbar */
-  .navbar {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100px;
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-  }
-  
-  .logo {
-    width: 140px;
-  }
-  
-  .nav-links {
-    display: flex;
-    gap: 20px;
-    list-style: none;
-  }
-  
-  .nav-links a {
-    color: white;
-    text-decoration: none;
+  .hero-subtitle {
     font-size: 1rem;
-    font-weight: 600;
-    transition: color 0.3s ease;
   }
-  
-  .nav-links a:hover {
-    color: #FFD700;
-  }
-  
-  /* ✅ Theme Toggle Button */
-  .theme-toggle {
-    background: none;
-    border: 2px solid #FFD700;
-    padding: 6px 14px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 20px;
-    color: white;
-    transition: all 0.3s ease;
-  }
-  
-  .theme-toggle:hover {
-    background: #FFD700;
-    color: black;
-  }
-  
-  /* ✅ Hero Section */
-  .hero {
-    max-width: 700px;
-    padding: 20px;
-  }
-  
-  .hero h1 {
-    font-size: 3rem;
-    font-weight: bold;
-  }
-  
-  .hero h1 span {
-    color: #FFD700; /* Gold contrast */
-  }
-  
-  .hero p {
-    font-size: 1.2rem;
-    margin-top: 10px;
-  }
-  
-  /* ✅ Improved "Get Started" Button */
-  .get-started {
-    background: linear-gradient(to right, #FFD700, #FFA500);
-    color: black;
-    padding: 12px 30px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    margin-top: 20px;
-    text-transform: uppercase;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease-in-out;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .get-started:hover {
-    transform: scale(1.1);
-    box-shadow: 0px 8px 20px rgba(255, 215, 0, 0.5);
-  }
-  
-  .get-started:active {
-    transform: scale(0.98);
-  }
-  
-  /* ✅ Features Section */
-  .features {
-    display: flex;
+  .hero-buttons {
     flex-direction: column;
-    align-items: center;
-    margin-top: 40px;
+    gap: 10px;
   }
-  
-  .feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    max-width: 80%;
-    margin-top: 20px;
-  }
-  
-  .feature-card {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 15px;
-    border-radius: 10px;
-    font-weight: bold;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-  
-  .feature-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.3);
-  }
-  
-  /* ✅ Footer */
-  .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-  }
-  
+}
+
+
+.animated-bg {
+  width: 100%;
+  height: 67vh;
+  display: flex;
+  padding-top: 350px;
+  padding-bottom: 300px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: background-color 0.6s ease-in-out; /* Smooth transition */
+
+  /* Dynamic Background Color */
+  background-size: contain; /* Makes the image larger while keeping proportions */
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  z-index: 1;
+}
+
+/* Pseudo-element for opacity & larger image */
+.animated-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../assets/logoimage.png') no-repeat center center;
+  background-size: 50%; /* Increase the image size (80% of the container width) */
+  opacity: 0.5; /* Adjust image opacity */
+  z-index: -1;
+}
+
+
+
+/* Ensure content stays above the overlay */
+.animated-bg > * {
+  position: relative;
+  z-index: 2;
+}
+
+.animated-bg h1 {
+  font-size: 3rem;
+  color: white;
+  font-weight: bold;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease-in-out;
+}
+
+.animated-bg:hover h1 {
+  transform: scale(1.1); /* Subtle zoom effect on hover */
+}

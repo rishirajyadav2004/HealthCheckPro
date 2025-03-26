@@ -4,8 +4,51 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const User = require("../models/User");
 const Otp = require("../models/Otp");
+const questions = require("../data/questions.json");
+const UserProgress = require("../models/UserProgress");
+
+
 
 const router = express.Router();
+
+
+
+
+router.post("/save-progress", async (req, res) => {
+
+    
+    try {
+      const { userId, category, questionId, selectedOption, points } = req.body;
+  
+      let progress = await UserProgress.findOne({ userId, category });
+  
+      if (!progress) {
+        progress = new UserProgress({
+          userId,
+          category,
+          completedQuestions: [],
+          score: 0,
+          completed: false,
+        });
+      }
+  
+      if (!progress.completedQuestions.some(q => q.questionId === questionId)) {
+        progress.completedQuestions.push({ questionId, selectedOption, points });
+        progress.score += points;
+      }
+  
+      if (progress.completedQuestions.length === 5) {
+        progress.completed = true;
+      }
+  
+      await progress.save();
+      res.json({ success: true, progress });
+  
+    } catch (error) {
+      console.error("Error saving progress:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
 
 // ✅ Test Route
 router.get("/test", (req, res) => {
@@ -95,41 +138,42 @@ router.post("/verify-otp", async (req, res) => {
     }
 });
 
-// ✅ Register User (Only after OTP Verification)
 router.post("/register", async (req, res) => {
-    const { name, age, gender, email, password } = req.body;
+    const { name, age, gender, username, email, password, confirmPassword } = req.body;
 
-    if (!name || !age || !gender || !email || !password) {
+    if (!name || !age || !gender || !username || !email || !password || !confirmPassword) {
         return res.status(400).json({ message: "⚠ All fields are required" });
     }
 
+    if (password !== confirmPassword) {
+        return res.status(400).json({ message: "❌ Passwords do not match" });
+    }
+
     try {
-        // ✅ Ensure OTP was verified (OTP should not exist in DB)
-        const storedOtp = await Otp.findOne({ email });
-
-        if (storedOtp) {
-            return res.status(400).json({ message: "❌ OTP not verified. Please verify your OTP first." });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "⚠ Email already exists" });
         }
 
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ message: "⚠ User already exists" });
-        }
+        console.log("🔹 Raw Password Before Hashing:", password);
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // ✅ Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("🔹 Hashed Password Before Storing:", hashedPassword);
 
-        user = new User({ name, age, gender, email, password: hashedPassword });
-        await user.save();
+        const newUser = new User({ name, age, gender, username, email, password: hashedPassword });
+        await newUser.save();
 
+        console.log("✅ User registered successfully!");
         res.status(201).json({ message: "✅ User registered successfully" });
+
     } catch (err) {
         console.error("❌ Error in registration:", err);
         res.status(500).json({ message: "❌ Internal server error" });
     }
 });
 
-// ✅ User Login
+
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
@@ -143,26 +187,174 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ message: "❌ Invalid email or password" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        console.log("✅ User found:", user.email);
+        console.log("🔹 Entered password (raw):", password);
+        console.log("🔹 Stored hashed password:", user.password);
+
+        if (typeof password !== "string") {
+            console.log("⚠ Entered password is not a string!");
+        }
+
+        // 🛠 Debug bcrypt.compare()
+        const isMatch = await bcrypt.compare(password.trim(), user.password);
+        console.log("🔍 bcrypt.compare() result:", isMatch);
+
         if (!isMatch) {
+            console.log("❌ Password does not match!");
             return res.status(401).json({ message: "❌ Invalid email or password" });
         }
 
+        // Generate token with user ID
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET || "default_secret",
             { expiresIn: "1h" }
         );
 
-        res.json({ 
-            message: "✅ Login successful",
-            token, 
-            user: { id: user._id, name: user.name, age: user.age, gender: user.gender, email: user.email } 
+        console.log("✅ Login successful! Token generated.");
+
+        // Return token, user ID, and name
+        res.json({
+            message: "✅ Login successful!",
+            token,
+            user: { id: user._id, name: user.name },
         });
+
     } catch (err) {
         console.error("❌ Error in login:", err);
         res.status(500).json({ message: "❌ Internal server error" });
     }
 });
+
+
+
+// Forgot Password Route
+router.post("/forgot-password", async (req, res) => {
+    const { email } = req.body;
+    
+    try {
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "User with this email does not exist." });
+        }
+
+        // Generate a reset token (valid for 1 hour)
+        const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        // Send email with the reset link
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL, // Your email
+                pass: process.env.EMAIL_PASSWORD, // Your email app password
+            },
+        });
+
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: user.email,
+            subject: "Password Reset Request",
+            html: `<p>Click <a href="${resetLink}">here</a> to reset your password. The link is valid for 1 hour.</p>`,
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ message: "Password reset link sent successfully!" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error." });
+    }
+});
+
+
+// Reset Password Route
+router.post("/reset-password/:token", async (req, res) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    try {
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired token." });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ message: "Password reset successful!" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Invalid or expired token." });
+    }
+});
+
+
+router.post("/api/auth/reset-password/:token", async (req, res) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+  
+    if (!newPassword) {
+      return res.status(400).json({ message: "⚠ Password is required" });
+    }
+  
+    // ✅ Strong Password Validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,15}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ message: "⚠ Password must be 6-15 characters, include uppercase, lowercase, number, and special character." });
+    }
+  
+    try {
+      // ✅ Log token before verifying
+      console.log("Received token:", token);
+  
+      // Verify Token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("Decoded Token:", decoded);
+  
+      const user = await User.findOne({ email: decoded.email });
+  
+      if (!user) {
+        console.log("❌ User not found for email:", decoded.email);
+        return res.status(404).json({ message: "❌ User not found" });
+      }
+  
+      // ✅ Hash new password and update MongoDB
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+      
+      console.log("✅ Password reset successful for:", user.email);
+      return res.json({ message: "✅ Password reset successfully!" });
+    } catch (error) {
+      console.error("❌ Reset Password Error:", error.message);
+      return res.status(400).json({ message: "❌ Invalid or expired token. Please request a new reset link." });
+    }
+  });
+  
+
+
+
+// Get questions for a specific category
+router.get("/questions/:category", (req, res) => {
+    const { category } = req.params;
+    res.json(questions[category] || []);
+  });
+  
+
+  // Get user progress
+  router.get("/progress/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const progress = await UserProgress.find({ userId });
+    res.json(progress);
+  });
 
 module.exports = router;
