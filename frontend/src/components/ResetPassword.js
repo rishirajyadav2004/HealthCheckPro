@@ -48,14 +48,14 @@ const ResetPassword = () => {
       setError("Password must be 6-15 characters, include uppercase, lowercase, number, and special character.");
       return;
     }
-
+  
     try {
       const response = await fetch(`http://localhost:5000/api/auth/reset-password/${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newPassword }),
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         setSuccess("Password reset successfully! Redirecting to login...");

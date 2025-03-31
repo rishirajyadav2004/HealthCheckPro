@@ -235,7 +235,8 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 
-// ✅ Forgot Password - Send Reset Link
+
+
 app.post("/api/auth/forgot-password", async (req, res) => {
   const { email } = req.body;
 
@@ -249,19 +250,12 @@ app.post("/api/auth/forgot-password", async (req, res) => {
       return res.status(404).json({ message: "❌ User with this email does not exist" });
     }
 
-    // Ensure CLIENT_URL is correctly set
-    if (!process.env.CLIENT_URL) {
-      return res.status(500).json({ message: "❌ Server error: CLIENT_URL is not defined" });
-    }
+    // Generate a reset token with user ID (not email)
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "10m" });
 
-    // Generate a reset token (valid for 10 mins)
-    const resetToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: "10m" });
-
-    // Generate reset link
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-    console.log("Generated Reset Link:", resetLink); // Debugging
+    console.log("Generated Reset Link:", resetLink);
 
-    // Send reset link via email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -284,7 +278,6 @@ app.post("/api/auth/forgot-password", async (req, res) => {
 
 
 
-
 app.post("/api/auth/reset-password/:token", async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
@@ -292,7 +285,7 @@ app.post("/api/auth/reset-password/:token", async (req, res) => {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ email: decoded.email });
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: "❌ User not found!" });
@@ -306,12 +299,8 @@ app.post("/api/auth/reset-password/:token", async (req, res) => {
       });
     }
 
-    // Hash new password before saving
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    // Update password in MongoDB
-    user.password = hashedPassword;
+    // Let Mongoose handle the hashing via the pre-save hook
+    user.password = newPassword;
     await user.save();
 
     res.json({ message: "✅ Password reset successful! You can now log in." });

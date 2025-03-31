@@ -3,7 +3,7 @@
 /* Dashboard Container */
 .dashboard-container {
   font-family: 'Nunito', sans-serif;
-  background-color: #aceffd;
+  background-color: #ecfcff;
   color: white;
   min-height: 100vh;
   font-weight: 900;
@@ -287,10 +287,15 @@
 
 .challenge-sub {
   background-color: rgba(204, 239, 239, 0.507);
-  display: inline-block;  /* Shrinks to fit text */
-  padding: 8px 12px;  /* Padding for better spacing */
-  border-radius: 8px;  /* Smooth rounded edges */
-  animation: colorChange 3s infinite alternate; /* Motion effect */
+  padding: 20px;
+  border-radius: 8px;
+  animation: colorChange 3s infinite alternate;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
 @keyframes colorChange {
@@ -309,18 +314,52 @@
   margin-bottom: 15px;
 }
 
+
+.assessment-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px; /* Prevent buttons from being too wide */
+  margin: 0 auto; /* Center the buttons */
+}
+
+.start-btn, .continue-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
 .start-btn {
   background: rgb(88, 231, 244);
   color: #000000;
   border: none;
-  padding: 12px 20px;
-  font-size: 18px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s;
 }
 
 .start-btn:hover {
   background: #388E3C;
   color: white;
+}
+
+.continue-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+}
+
+.continue-btn:hover {
+  background-color: #357ab8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.challenge-sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
