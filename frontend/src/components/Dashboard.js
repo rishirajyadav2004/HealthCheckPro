@@ -111,6 +111,7 @@ const Dashboard = () => {
                 <div className={`nav-links ${menuOpen ? "open" : ""}`}>
                     <a href="/dashboard">Dashboard</a>
                     <a href="/assessment">Assessment</a>
+                    <a href="/assessment-history">History</a>
                     <a href="/leaderboard">Leaderboard</a>
                     <a href="/score">Health Report</a>
                     <button onClick={handleLogout} className="logout-btn">Logout</button>

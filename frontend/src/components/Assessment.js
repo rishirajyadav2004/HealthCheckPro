@@ -4,6 +4,44 @@ import axios from "axios";
 import "../styles/assessment.css";
 import logo from "../assets/healthcheckpro-logo.webp";
 
+// Import all required images directly
+import E1 from '../assets/E1.jpg';
+import E2 from '../assets/E2.jpg';
+import E3 from '../assets/E3.jpg';
+import E4 from '../assets/E4.jpg';
+import E5 from '../assets/E5.jpg';
+import F1 from '../assets/F1.jpg';
+import F2 from '../assets/F2.jpg';
+import F3 from '../assets/F3.jpg';
+import F4 from '../assets/F4.jpg';
+import F5 from '../assets/F5.jpg';
+import S1 from '../assets/S1.jpg';
+import S2 from '../assets/S2.jpg';
+import S3 from '../assets/S3.jpg';
+import S4 from '../assets/S4.jpg';
+import S5 from '../assets/S5.jpg';
+import M1 from '../assets/M1.jpg';
+import M2 from '../assets/M2.jpg';
+import M3 from '../assets/M3.jpg';
+import M4 from '../assets/M4.jpg';
+import M5 from '../assets/M5.jpg';
+import L1 from '../assets/L1.jpg';
+import L2 from '../assets/L2.jpg';
+import L3 from '../assets/L3.jpg';
+import L4 from '../assets/L4.jpg';
+import L5 from '../assets/L5.jpg';
+import placeholder from '../assets/placeholder.png';
+
+// Create image mapping object
+const imageMap = {
+  E1, E2, E3, E4, E5,
+  F1, F2, F3, F4, F5,
+  S1, S2, S3, S4, S5,
+  M1, M2, M3, M4, M5,
+  L1, L2, L3, L4, L5,
+  placeholder
+};
+
 const categories = ["PhysicalFitness", "Nutrition", "MentalWellBeing", "Lifestyle", "Biomarkers"];
 
 const AssessmentPage = () => {
@@ -15,6 +53,7 @@ const AssessmentPage = () => {
     const [userScore, setUserScore] = useState({});
     const [userId, setUserId] = useState("");
     const [loading, setLoading] = useState(true);
+    const [showResetModal, setShowResetModal] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -57,7 +96,6 @@ const AssessmentPage = () => {
                 setCompletedCategories(res.data.completedCategories || {});
                 setUserScore(res.data.scores || {});
                 
-                // Find first incomplete category
                 const firstIncompleteIndex = categories.findIndex(
                     cat => !res.data.completedCategories?.[cat]
                 );
@@ -65,27 +103,21 @@ const AssessmentPage = () => {
                 const newIndex = firstIncompleteIndex >= 0 ? firstIncompleteIndex : 0;
                 setCurrentCategoryIndex(newIndex);
                 
-                // Load questions for the current category
                 const currentCategory = categories[newIndex];
                 await fetchQuestions(currentCategory);
                 
-                // Wait for questions to load before setting answers and current question index
                 const questionsRes = await axios.get(
                     `http://localhost:5000/api/assessment/questions/${currentCategory}`
                 );
                 const categoryQuestions = questionsRes.data;
                 
-                // Set answers from progress data
                 setAnswers(res.data.answers || {});
                 
-                // Find the first unanswered question in this category
                 if (res.data.answers) {
                     let firstUnansweredIndex = categoryQuestions.findIndex(
                         q => !res.data.answers[q.id]
                     );
                     
-                    // If all questions are answered but category isn't marked complete
-                    // (maybe user didn't click submit), start from first question
                     if (firstUnansweredIndex === -1 && !res.data.completedCategories[currentCategory]) {
                         firstUnansweredIndex = 0;
                     }
@@ -105,7 +137,6 @@ const AssessmentPage = () => {
     useEffect(() => {
         if (userId) {
             if (location.state?.forceRefresh) {
-                // Reset state for new assessment
                 setCurrentCategoryIndex(0);
                 setCurrentQuestionIndex(0);
                 setAnswers({});
@@ -125,32 +156,24 @@ const AssessmentPage = () => {
         }));
     };
 
-
-
     const resetCurrentCategory = async () => {
         try {
             setLoading(true);
             const currentCategory = categories[currentCategoryIndex];
             
-            // Confirm with user before resetting
             if (!window.confirm(`Are you sure you want to reset your ${currentCategory.replace(/([A-Z])/g, ' $1').trim()} progress?`)) {
                 setLoading(false);
                 return;
             }
     
-            // Delete only the current category's progress
             await axios.delete(
                 `http://localhost:5000/api/assessment/reset-category/${userId}/${currentCategory}`
             );
             
-            // Reset local state for this category
             setAnswers({});
             setCurrentQuestionIndex(0);
-            
-            // Refresh questions
             await fetchQuestions(currentCategory);
             
-            // Update completed categories
             const progressRes = await axios.get(
                 `http://localhost:5000/api/assessment/progress/${userId}`
             );
@@ -171,6 +194,12 @@ const AssessmentPage = () => {
         );
     };
 
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+        }
+    };
+
     const handleNextQuestion = async () => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -183,7 +212,6 @@ const AssessmentPage = () => {
             setLoading(true);
             const currentCategory = categories[currentCategoryIndex];
             
-            // Verify all questions are answered
             const unansweredQuestions = questions.filter(q => !answers[q.id]);
             if (unansweredQuestions.length > 0) {
                 throw new Error(`Please answer all ${unansweredQuestions.length} remaining questions`);
@@ -245,12 +273,19 @@ const AssessmentPage = () => {
             setCompletedCategories({});
             setUserScore({});
             await fetchQuestions(categories[0]);
+            setShowResetModal(false);
         } catch (error) {
             console.error("Error resetting assessment:", error);
         } finally {
             setLoading(false);
         }
     };
+
+    // const calculateProgress = () => {
+    //     if (questions.length === 0) return 0;
+    //     const answeredCount = questions.filter(q => answers[q.id]).length;
+    //     return (answeredCount / questions.length) * 100;
+    // };
 
     if (loading) {
         return (
@@ -263,8 +298,37 @@ const AssessmentPage = () => {
         );
     }
 
+    const currentQuestion = questions[currentQuestionIndex] || {};
+    const imageKey = currentQuestion.image ? currentQuestion.image.replace('.jpg', '') : 'placeholder';
+    const questionImage = imageMap[imageKey] || imageMap.placeholder;
+
     return (
         <div className="assessment-container">
+            {showResetModal && (
+                <div className="reset-modal-overlay">
+                    <div className="reset-modal">
+                        <h3>Reset All Progress</h3>
+                        <p>Are you sure you want to reset all assessment progress? This action cannot be undone.</p>
+                        <div className="reset-modal-buttons">
+                            <button 
+                                className="reset-modal-cancel"
+                                onClick={() => setShowResetModal(false)}
+                                disabled={loading}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                className="reset-modal-confirm"
+                                onClick={resetAssessment}
+                                disabled={loading}
+                            >
+                                {loading ? "Resetting..." : "Confirm Reset"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <nav className="assessment-navbar">
                 <img src={logo} alt="Health Check Pro Logo" className="nav-logo" />
                 <span className="nav-title">Health Check Pro</span>
@@ -278,10 +342,10 @@ const AssessmentPage = () => {
                     </button>
                     <button 
                         className="reset-btn reset-all-btn" 
-                        onClick={resetAssessment} 
+                        onClick={() => setShowResetModal(true)} 
                         disabled={loading}
                     >
-                        {loading ? "Resetting..." : "Reset All"}
+                        Reset All
                     </button>
                 </div>
             </nav>
@@ -323,36 +387,92 @@ const AssessmentPage = () => {
                             <div className="progress-indicator">
                                 Question {currentQuestionIndex + 1} of {questions.length}
                             </div>
-                            <p>{questions[currentQuestionIndex].question}</p>
-                            {questions[currentQuestionIndex].options.map((option, index) => (
-                                <button
-                                    key={index}
-                                    className={`option-btn ${
-                                        answers[questions[currentQuestionIndex].id]?.selectedOption === option
-                                            ? "selected"
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        handleAnswerSelect(
-                                            questions[currentQuestionIndex].id,
-                                            option,
-                                            questions[currentQuestionIndex].points[index]
-                                        )
-                                    }
-                                    disabled={loading}
+                            
+                            {/* Progress Bar */}
+                            {/* Progress Bar */}
+                            <div className="progress-container">
+                                <div className="progress-track">
+                                    <div 
+                                    className="progress-fills" 
+                                    style={{ width: `${(currentQuestionIndex / 4) * 100}%` }}
+                                    ></div>
+                                </div>
+                                <div className="progress-dots">
+                                    {[0, 1, 2, 3, 4].map((index) => (
+                                    <div 
+                                        key={index}
+                                        className={`progress-dot ${currentQuestionIndex >= index ? 'active' : ''}`}
+                                    ></div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="question-layout-container">
+                                <div className="image-column">
+                                    <div className="question-image-container">
+                                        <img 
+                                            src={questionImage}
+                                            alt={currentQuestion.question || 'Question image'}
+                                            className="question-image"
+                                            onError={(e) => {
+                                                e.target.src = imageMap.placeholder;
+                                                e.target.alt = 'Placeholder image';
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="content-column">
+                                    <div className="question-text-container">
+                                        <p>{currentQuestion.question}</p>
+                                    </div>
+
+                                    <div className="options-scroll-container">
+                                        <div className="options-container">
+                                            {currentQuestion.options?.map((option, index) => (
+                                                <label
+                                                    key={index}
+                                                    className="option-radio"
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name={currentQuestion.id}
+                                                        value={option}
+                                                        checked={answers[currentQuestion.id]?.selectedOption === option}
+                                                        onChange={() =>
+                                                            handleAnswerSelect(
+                                                                currentQuestion.id,
+                                                                option,
+                                                                currentQuestion.points[index]
+                                                            )
+                                                        }
+                                                    />
+                                                    <span className="option-text">{option}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="navigation-buttons">
+                                <button 
+                                    className="nav-btn prev-btn"
+                                    onClick={handlePreviousQuestion}
+                                    disabled={currentQuestionIndex === 0 || loading}
                                 >
-                                    {option}
+                                    Previous
                                 </button>
-                            ))}
-                            <button 
-                                className="next-btn" 
-                                onClick={handleNextQuestion}
-                                disabled={loading || !answers[questions[currentQuestionIndex].id]}
-                            >
-                                {currentQuestionIndex < questions.length - 1 
-                                    ? loading ? "Loading..." : "Next" 
-                                    : loading ? "Submitting..." : "Submit"}
-                            </button>
+                                <button 
+                                    className="nav-btn next-btn" 
+                                    onClick={handleNextQuestion}
+                                    disabled={loading || !answers[currentQuestion.id]}
+                                >
+                                    {currentQuestionIndex < questions.length - 1 
+                                        ? loading ? "Loading..." : "Next" 
+                                        : loading ? "Submitting..." : "Submit"}
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <p>No questions available for this category.</p>

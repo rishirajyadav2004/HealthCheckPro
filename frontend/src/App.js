@@ -9,6 +9,8 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import Assessment from "./components/Assessment"; // ✅ Import Assessment Page
 import ScorePage from "./components/ScorePage";
+import AssessmentHistory from "./components/AssessmentHistory";
+import Leaderboard from "./components/Leaderboard";
 
 
 const NotFound = () => <h2 className="text-center mt-5">404 - Page Not Found</h2>;
@@ -27,6 +29,8 @@ const App = () => {
                 <Route path="/assessment" element={<Assessment />} /> {/* ✅ Added Route */}
                 <Route path="*" element={<NotFound />} /> {/* Handles invalid URLs */}
                 <Route path="/score" element={<ScorePage />} />
+                <Route path="/assessment-history" element={<AssessmentHistory />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
             </Routes>
         </Router>
     );

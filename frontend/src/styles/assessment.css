@@ -3,7 +3,7 @@
   background-image: url("../assets/bgimg.jpg");
   background-size: cover;
   background-position: center;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -17,6 +17,9 @@
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .nav-logo {
@@ -24,26 +27,28 @@
   margin-right: 15px;
 }
 
-
 .nav-title {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
-  margin-right: auto; /* Pushes everything after it to the right */
+  margin-right: auto;
 }
 
 /* Content Layout */
 .assessment-content {
   display: flex;
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* Sidebar Styles - Fixed the double checkmark issue */
+/* Sidebar Styles */
 .sidebar {
-  width: 200px;
-  background: rgba(255, 255, 255, 0.9);
+  width: 220px;
+  background: rgba(255, 255, 255, 0.95);
   padding: 20px;
   overflow-y: auto;
+  border-right: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
 }
 
 .sidebar-item {
@@ -61,20 +66,22 @@
 
 .sidebar-item:hover {
   background-color: #e0e0e0;
+  transform: translateX(5px);
 }
 
 .sidebar-item.active {
   background-color: #4a90e2;
   color: white;
   font-weight: bold;
+  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
 }
 
 .sidebar-item.completed {
   background-color: #4CAF50;
   color: white;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
 }
 
-/* Removed the ::after pseudo-element and kept only the .checkmark span */
 .checkmark {
   font-weight: bold;
   margin-left: 10px;
@@ -91,62 +98,166 @@
 /* Question Section */
 .question-section {
   flex: 1;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  text-align: center;
-  margin: auto;
-  width: 50%;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.741);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Question Box */
-.question-box {
+/* Question Layout */
+.question-layout-container {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.image-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+.content-column {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.question-image-container {
+  width: 100%;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #d9efff, #b0d9f5);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.question-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.question-image:hover {
+  transform: scale(1.05);
+}
+
+.question-text-container {
   background: white;
-  padding: 20px;
+  padding: 25px;
+  margin-bottom: 20px;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #4a90e2;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 1.1rem;
+  line-height: 1.5;
 }
 
-.option-btn {
+.options-scroll-container {
+
+  padding-right: 0;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option-radio {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 50%;
-  padding: 10px;
-  margin: 10px auto;
-  background: rgba(178, 197, 193, 0.741);
+  padding: 18px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e0f0ff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.option-radio:hover {
+  border-color: #4a90e2;
+  background: linear-gradient(to right, #eaf6ff, #d0eaff);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.option-radio input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+  accent-color: #4a90e2;
+}
+
+.option-text {
+  flex: 1;
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.nav-btn {
+  padding: 12px 24px;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
-  transition: 0.1s ease-in-out;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 120px;
   text-align: center;
 }
 
-.option-btn:hover {
-  background-color: #008000;
-  color: white;
+.prev-btn {
+  background: #f0f0f0;
+  color: #333;
 }
 
-.option-btn.selected {
-  background-color: #22d428;
-  color: white;
-  font-weight: bold;
+.prev-btn:hover:not(:disabled) {
+  background: #e0e0e0;
+  transform: translateY(-2px);
 }
 
-/* Next Button */
 .next-btn {
-  padding: 10px 20px;
-  background: #008000;
+  background: #4CAF50;
   color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+  margin-left: auto;
 }
 
+.next-btn:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.nav-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.7;
+}
+
+
+
+
+/* Reset Buttons */
 .reset-buttons {
   display: flex;
   gap: 10px;
-  margin-left: auto; /* This will push the buttons to the right */
+  margin-left: auto;
 }
 
 .reset-btn {
@@ -156,18 +267,20 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
   font-size: 0.9rem;
   white-space: nowrap;
 }
 
 .reset-btn:hover {
   background-color: #d32f2f;
+  transform: translateY(-2px);
 }
 
 .reset-btn:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+  transform: none;
 }
 
 .reset-all-btn {
@@ -185,7 +298,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -213,22 +326,6 @@
   color: #666;
 }
 
-.option-btn.selected {
-  background-color: #008000;
-  border: 2px solid #008000;
-}
-
-.option-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.next-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Category Header */
 .category-header {
   display: flex;
   justify-content: space-between;
@@ -236,9 +333,254 @@
   margin-bottom: 20px;
 }
 
+.category-header h2 {
+  color: #2c3e50;
+  margin: 0;
+}
+
 .progress-text {
   background-color: #f0f0f0;
-  padding: 5px 10px;
-  border-radius: 15px;
+  padding: 8px 15px;
+  border-radius: 20px;
   font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 180px;
+    padding: 15px 10px;
+  }
+  
+  .question-section {
+    padding: 20px;
+  }
+  
+  .question-layout-container {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .assessment-content {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .sidebar-item {
+    min-width: 160px;
+    margin: 0 5px;
+  }
+  
+  .question-layout-container {
+    flex-direction: column;
+  }
+  
+  .image-column {
+    min-width: 100%;
+  }
+  
+  .question-image-container {
+    height: 220px;
+  }
+  
+  .navigation-buttons {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .nav-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .assessment-container {
+    min-height: auto;
+  }
+
+  .assessment-navbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+  }
+  
+  .nav-title {
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .reset-buttons {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: space-between;
+  }
+  
+  .question-section {
+    padding: 15px;
+  }
+  
+  .question-text-container {
+    padding: 15px;
+    font-size: 1rem;
+  }
+  
+  .option-radio {
+    padding: 12px;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 10px;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+  
+  .sidebar-item {
+    display: inline-block;
+    min-width: 140px;
+    margin: 0 5px;
+  }
+  
+  /* Question section adjustments */
+  .question-section {
+    padding: 15px;
+  }
+  
+  .question-layout-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .image-column {
+    min-width: 100%;
+  }
+  
+  .question-image-container {
+    height: 200px;
+  }
+  
+  /* Progress bar adjustments */
+  .progress-container {
+    margin: 15px 0;
+  }
+  
+  .progress-dot {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Options adjustments */
+  .option-radio {
+    padding: 12px 15px;
+  }
+  
+  /* Navigation buttons */
+  .navigation-buttons {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .nav-btn {
+    width: 100%;
+  }
+  
+  /* Category header */
+  .category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .progress-text {
+    align-self: flex-start;
+  }
+}
+
+
+@media (max-width: 360px) {
+  .question-image-container {
+    height: 160px;
+  }
+  
+  .question-text-container {
+    padding: 15px;
+    font-size: 0.95rem;
+  }
+  
+  .option-radio {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+  
+
+  
+  .sidebar-item {
+    min-width: 120px;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+
+/* Progress Bar Styles */
+.progress-container {
+  width: 100%;
+  margin: 20px 0;
+  position: relative;
+}
+
+.progress-track {
+  height: 6px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fills {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(to right, #4a90e2, #4a90e2);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.progress-dots {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.progress-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  border: 3px solid #f0f0f0;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-dot.active {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
 }

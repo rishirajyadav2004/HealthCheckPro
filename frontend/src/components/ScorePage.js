@@ -15,6 +15,8 @@ const categories = [
   { key: "Biomarkers", name: "Biomarkers", color: "#9966FF" }
 ];
 
+const EMPTY_SCORE_MESSAGE = "You haven't completed the health assessment yet. Complete the assessment to get your personalized health report with detailed insights and recommendations.";
+
 const getHealthReview = (totalScore) => {
   if (totalScore >= 100) return "Excellent! Your health is in great shape. Keep up the good habits!";
   if (totalScore >= 80) return "Good! You're doing well but there's room for improvement in some areas.";
@@ -22,6 +24,7 @@ const getHealthReview = (totalScore) => {
   if (totalScore >= 40) return "Needs Improvement. Your health could benefit from significant changes.";
   return "Poor. It's recommended to consult a healthcare professional and make lifestyle changes.";
 };
+
 
 const ScorePage = () => {
   const { userId } = useParams();
@@ -70,6 +73,14 @@ const ScorePage = () => {
   const totalScore = categories.reduce((sum, category) => {
     return sum + (userScores[category.key] || 0);
   }, 0);
+
+
+    // Check if all scores are 0 or empty
+    const allScoresZero = categories.every(category => {
+      const score = userScores[category.key] || 0;
+      return score === 0;
+    });
+  
 
   const maxScore = 5 * 5 * 5; // 5 categories * 5 questions * 5 max points per question
 
@@ -125,6 +136,30 @@ const ScorePage = () => {
           <h2>Error Loading Report</h2>
           <p>{error}</p>
           <button onClick={() => window.location.reload()}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state message if all scores are 0
+  if (allScoresZero) {
+    return (
+      <div className="score-container">
+        <div className="empty-score-message">
+          <h2>No Assessment Results Found</h2>
+          <p>{EMPTY_SCORE_MESSAGE}</p>
+          <div className="empty-score-illustration">
+            <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="1.5">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              <circle cx="12" cy="12" r="10" />
+            </svg>
+          </div>
+          <button 
+            className="take-assessment-btn"
+            onClick={() => navigate("/assessment")}
+          >
+            Start Assessment
+          </button>
         </div>
       </div>
     );
