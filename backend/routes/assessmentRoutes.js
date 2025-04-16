@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
 const UserProgress = require("../models/UserProgress");
+const auth = require("../middleware/auth")
 const router = express.Router();
 
 // Load questions from JSON file
@@ -25,6 +26,24 @@ const validateUser = (req, res, next) => {
   next();
 };
 
+
+// In your backend routes
+router.get('/scores', auth, async (req, res) => {
+  try {
+    const progress = await UserProgress.find({ userId: req.user.id });
+    const scores = {};
+    
+    categories.forEach(category => {
+      const categoryProgress = progress.find(p => p.category === category);
+      scores[category] = categoryProgress?.totalScore || 0;
+    });
+
+    res.json({ scores });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch scores" });
+  }
+});
+
 // GET questions by category
 router.get("/questions/:category", async (req, res) => {
   try {
@@ -45,136 +64,103 @@ router.get("/questions/:category", async (req, res) => {
   }
 });
 
-router.post("/save-progress", validateUser, async (req, res) => {
+
+router.post("/save-progress", auth, async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   
   try {
-    const { userId, currentCategory, answers, scores } = req.body;
+      const { currentCategory, answers } = req.body;
+      const userId = req.user.id;
 
-    // Validate required fields
-    if (!userId || !currentCategory || !answers || !scores) {
-      await session.abortTransaction();
-      return res.status(400).json({
-        success: false,
-        error: "Missing required fields",
-        details: {
-          required: ["userId", "currentCategory", "answers", "scores"],
-          received: Object.keys(req.body)
-        }
-      });
-    }
-
-    // Validate category
-    if (!categories.includes(currentCategory)) {
-      await session.abortTransaction();
-      return res.status(400).json({
-        success: false,
-        error: "Invalid category",
-        validCategories: categories
-      });
-    }
-
-    // Process and validate answers
-    const responses = [];
-    let totalScore = 0;
-    
-    for (const [questionId, answer] of Object.entries(answers)) {
-      try {
-        const numId = Number(questionId);
-        if (isNaN(numId)) throw new Error(`Invalid question ID: ${questionId}`);
-        
-        if (!answer || typeof answer !== 'object') {
-          throw new Error('Answer must be an object');
-        }
-
-        const points = Number(answer.points) || 0;
-        const selectedOption = String(answer.selectedOption || '');
-
-        responses.push({
-          questionId: numId,
-          answer: selectedOption,
-          points: points
-        });
-
-        totalScore += points;
-      } catch (error) {
-        await session.abortTransaction();
-        return res.status(400).json({
-          success: false,
-          error: `Invalid answer for question ${questionId}`,
-          details: error.message
-        });
+      // Validate required fields
+      if (!currentCategory || !answers) {
+          await session.abortTransaction();
+          return res.status(400).json({
+              success: false,
+              error: "Missing required fields",
+              details: {
+                  required: ["currentCategory", "answers"],
+                  received: Object.keys(req.body)
+              }
+          });
       }
-    }
 
-    // Save progress
-    const updatedProgress = await UserProgress.findOneAndUpdate(
-      { userId, category: currentCategory },
-      {
-        userId,
-        category: currentCategory,
-        responses,
-        totalScore,
-        completed: true,
-        lastUpdated: new Date()
-      },
-      { 
-        upsert: true,
-        new: true,
-        session
+      // Process answers and calculate score
+      const responses = [];
+      let totalScore = 0;
+
+      for (const [questionId, answer] of Object.entries(answers)) {
+          responses.push({
+              questionId: Number(questionId),
+              answer: answer.selectedOption,
+              points: answer.points
+          });
+          totalScore += answer.points;
       }
-    );
 
-    // Get all progress for completion status
-    const allProgress = await UserProgress.find({ userId }).session(session);
-    await session.commitTransaction();
+      // Update progress
+      const updatedProgress = await UserProgress.findOneAndUpdate(
+          { userId, category: currentCategory },
+          {
+              responses,
+              totalScore,
+              completed: true,
+              lastUpdated: new Date()
+          },
+          { 
+              upsert: true,
+              new: true,
+              session
+          }
+      );
 
-    const completionStatus = {};
-    const completeScores = {};
-    
-    categories.forEach(category => {
-      const catProgress = allProgress.find(p => p.category === category);
-      completionStatus[category] = !!catProgress?.completed;
-      completeScores[category] = catProgress?.totalScore || 0;
-    });
+      // Get completion status
+      const allProgress = await UserProgress.find({ userId }).session(session);
+      await session.commitTransaction();
 
-    const allCategoriesCompleted = categories.every(cat => completionStatus[cat]);
+      const completionStatus = {};
+      const completeScores = {};
+      
+      categories.forEach(category => {
+          const catProgress = allProgress.find(p => p.category === category);
+          completionStatus[category] = !!catProgress?.completed;
+          completeScores[category] = catProgress?.totalScore || 0;
+      });
 
-    res.json({
-      success: true,
-      isAssessmentComplete: allCategoriesCompleted,
-      scores: completeScores,
-      completedCategories: completionStatus,
-      nextCategory: allCategoriesCompleted ? null : 
-        categories.find(cat => !completionStatus[cat])
-    });
+      const allCategoriesCompleted = categories.every(cat => completionStatus[cat]);
+
+      res.json({
+          success: true,
+          isAssessmentComplete: allCategoriesCompleted,
+          scores: completeScores,
+          completedCategories: completionStatus,
+          nextCategory: allCategoriesCompleted ? null : 
+              categories.find(cat => !completionStatus[cat])
+      });
 
   } catch (error) {
-    await session.abortTransaction();
-    console.error("Save progress error:", {
-      error: error.message,
-      stack: error.stack,
-      body: req.body
-    });
-    
-    res.status(500).json({
-      success: false,
-      error: "Failed to save progress",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+      await session.abortTransaction();
+      console.error("Save progress error:", {
+          error: error.message,
+          stack: error.stack,
+          body: req.body
+      });
+      
+      res.status(500).json({
+          success: false,
+          error: "Failed to save progress",
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
   } finally {
-    session.endSession();
+      session.endSession();
   }
 });
 
-
 // Get user progress with comprehensive data
-router.get("/progress/:userId", validateUser, async (req, res) => {
+router.get("/progress", auth, async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    const progress = await UserProgress.find({ userId });
+    const progress = await UserProgress.find({ userId: req.user.id });
 
     // Initialize default response
     const response = {
@@ -283,28 +269,119 @@ router.get("/scores/:userId", validateUser, async (req, res) => {
   }
 });
 
-// Reset assessment completely for a user
-router.post("/reset-assessment/:userId", validateUser, async (req, res) => {
+// In your assessmentRoutes.js
+router.post("/reset-assessment", auth, async (req, res) => {
   try {
-    const { userId } = req.params;
-    
-    await UserProgress.deleteMany({ userId });
-    
-    res.json({
-      success: true,
-      message: "Assessment reset successfully",
-      scores: Object.fromEntries(categories.map(cat => [cat, 0])),
-      completedCategories: Object.fromEntries(categories.map(cat => [cat, false]))
-    });
-    
+      // Delete all progress for this user
+      await UserProgress.deleteMany({ userId: req.user.id });
+      
+      // Initialize fresh progress records
+      const initializationPromises = categories.map(category => 
+          UserProgress.create({
+              userId: req.user.id,
+              category,
+              responses: [],
+              totalScore: 0,
+              completed: false
+          })
+      );
+
+      await Promise.all(initializationPromises);
+      
+      res.json({ 
+          success: true, 
+          message: "Assessment reset successfully",
+          scores: Object.fromEntries(categories.map(cat => [cat, 0])) // Remove this extra parenthesis
+      });
   } catch (error) {
-    console.error("Reset error:", error);
-    res.status(500).json({
-      error: "Failed to reset assessment",
-      details: error.message,
-      success: false
-    });
+      console.error("Reset error:", error);
+      res.status(500).json({ 
+          success: false,
+          error: "Failed to reset assessment",
+          details: error.message 
+      });
   }
 });
+
+
+// Add this new route
+router.post("/initialize", auth, async (req, res) => {
+  try {
+    // Check if user already has any progress
+    const existingProgress = await UserProgress.findOne({ userId: req.user.id });
+    if (existingProgress) {
+      return res.status(200).json({ message: "User already has assessment data" });
+    }
+
+    // Initialize empty progress for all categories
+    const initializationPromises = categories.map(category => 
+      UserProgress.create({
+        userId: req.user.id,
+        category,
+        responses: [],
+        totalScore: 0,
+        completed: false
+      })
+    );
+
+    await Promise.all(initializationPromises);
+    res.json({ success: true, message: "Assessment initialized" });
+  } catch (error) {
+    res.status(500).json({ error: "Initialization failed" });
+  }
+});
+
+
+// Add this route to assessmentRoutes.js
+router.get("/current-progress", auth, async (req, res) => {
+  try {
+      const progress = await UserProgress.find({ userId: req.user.id });
+      
+      // Initialize response
+      const response = {
+          completedCategories: {},
+          scores: {},
+          nextCategoryIndex: 0,
+          answers: {}
+      };
+
+      // Populate completed categories and scores
+      progress.forEach(item => {
+          response.completedCategories[item.category] = item.completed;
+          response.scores[item.category] = item.totalScore;
+          
+          // Store answers
+          item.responses.forEach(resp => {
+              response.answers[resp.questionId] = {
+                  selectedOption: resp.answer,
+                  points: resp.points
+              };
+          });
+      });
+
+      // Find first incomplete category
+      const categories = ["PhysicalFitness", "Nutrition", "MentalWellBeing", "Lifestyle", "Biomarkers"];
+      response.nextCategoryIndex = categories.findIndex(
+          cat => !response.completedCategories[cat]
+      );
+
+      // If all completed, nextCategoryIndex will be -1
+      if (response.nextCategoryIndex === -1) {
+          response.nextCategoryIndex = 0; // Start from beginning if all completed
+      }
+
+      res.json({
+          success: true,
+          data: response
+      });
+  } catch (error) {
+      console.error("Error fetching current progress:", error);
+      res.status(500).json({
+          success: false,
+          error: "Failed to fetch current progress"
+      });
+  }
+});
+
 
 module.exports = router;

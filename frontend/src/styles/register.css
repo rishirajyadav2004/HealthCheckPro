@@ -4,339 +4,478 @@
   font-family: 'Nunito', sans-serif;
 }
 
-
-
-
-/* Full-screen fixed background image */
-.auth-wrapper {
-display: flex;
-justify-content: flex-end; /* Align form to the right */
-align-items: center;
-min-height: 100vh;
-width: 100vw;
-background: url('../assets/your-background-image.jpg') no-repeat center center/cover;
-background-attachment: fixed; /* Keeps background fixed when scrolling */
-padding-right: 5%;
-overflow: hidden; /* Prevent unwanted scrolling */
+body, html {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-
-.auth-page::before {
-content: "";
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: url('../assets/your-background-image.jpg') no-repeat center center/cover;
-z-index: -1;
+/* Register page specific styles */
+.register-page {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #003366, white);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: register-fadeIn 1.5s ease-in-out;
+  overflow-x: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Enable Scrolling on Entire Page */
-.auth-wrapper {
-height: 100vh;
-overflow-y: auto; /* Page scrolls when content is taller */
+/* Main container */
+.register-main-container {
+  display: flex;
+  width: 1000px;
+  max-height: 90vh;
+  background: linear-gradient(to right, skyblue, white);
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-/* Form styles */
-.auth-box {
-background: rgba(245, 244, 244, 0);
-padding: 2rem;
+/* Left section - Image */
+.register-left-section {
+  flex: 1;
+  width: 50%;
+  min-height: 550px;
+  background-image: url('../assets/register.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: register-fadeInLeft 1.5s ease-in-out;
 }
 
+/* Right section - Form */
+.register-right-section {
+  flex: 1;
+  background: #86C7FC;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: 90vh;
+}
 
+.register-form-container {
+  width: 100%;
+  max-width: 550px;
+}
 
+.register-form-box {
+  background-color: skyblue;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.register-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #003366;
+  font-size: 1.8rem;
+}
+
+.register-user-icon {
+  margin-left: 0.5rem;
+}
+
+/* Social buttons */
+.register-social-signup {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.register-google-btn,
+.register-facebook-btn {
+  flex: 1;
+  max-width: 250px; /* Fixed width for desktop */
+  min-width: 280px;
+  padding: 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: none;
+  white-space: nowrap; /* Prevents text wrapping */
+}
+
+.register-google-btn {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.register-google-btn:hover {
+  background-color: #f1f1f1;
+}
+
+.register-facebook-btn {
+  background-color: #4267B2;
+  color: white;
+}
+
+.register-facebook-btn:hover {
+  background-color: #3b5998;
+}
+
+.register-or-text {
+  text-align: center;
+  margin: 1rem 0;
+  color: #333;
+  font-weight: 500;
+}
+
+@media (max-width: 800px) {
+  .register-social-signup {
+    flex-direction: column; /* Stack buttons */
+    gap: 15px; /* More space */
+    align-items: center; /* Center the buttons */
+  }
+  
+  .google-btn,
+  .facebook-btn {
+    max-width: 100%; /* Full width */
+  }
+  }
+  
+
+/* Form elements */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.register-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.register-input-group input {
+  width: 100%;
+  padding: 0.75rem 2.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.register-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.register-input-icon {
+  position: absolute;
+  left: 0.75rem;
+  width: 18px;
+  height: 18px;
+}
+
+.register-toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Buttons */
+.register-otp-btn,
+.register-verify-btn,
+.register-submit-btn {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-otp-btn,
+.register-verify-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.register-otp-btn:hover,
+.register-verify-btn:hover {
+  background-color: #0069d9;
+}
+
+.register-otp-btn:disabled,
+.register-verify-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.register-submit-btn {
+  background-color: #28a745;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.register-submit-btn:hover {
+  background-color: #218838;
+}
+
+.register-submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* OTP container */
+.register-otp-container {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.register-otp-container input {
+  flex: 1;
+  padding: 0.75rem;
+}
+
+/* Messages */
+.register-error-message,
+.register-password-error {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  word-break: break-word;
+}
+
+.register-success-message {
+  color: #28a745;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  word-break: break-word;
+}
+
+/* Login link */
+.register-login-text {
+  text-align: center;
+  margin-top: 1rem;
+  color: #333;
+}
+
+.register-login-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-login-link:hover {
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes register-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes register-fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+  .register-main-container {
+    flex-direction: column;
+    height: auto;
+    max-height: none;
+  }
+
+  .register-left-section {
+    width: 100%;
+    min-height: 250px;
+    height: 250px;
+  }
+
+  .register-right-section {
+    width: 100%;
+    padding: 1.5rem;
+    overflow-y: visible;
+    max-height: none;
+  }
+
+  .register-form-box {
+    padding: 1.5rem;
+  }
+
+  .register-social-signup {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .register-google-btn,
+  .register-facebook-btn {
+    min-width: calc(50% - 0.4rem);
+    max-width: calc(50% - 0.4rem);
+  }
+}
+
+@media (max-width: 576px) {
+  .register-page {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .register-main-container {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .register-social-signup {
+    flex-direction: column;
+  }
+
+  .register-google-btn,
+  .register-facebook-btn {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .register-form-box {
+    padding: 1rem;
+  }
+
+  .register-right-section {
+    padding: 1rem;
+  }
+}
 
 /* User icon */
 .user-icon {
-font-size: 2.2rem;
-color: white;
-}
-
-
-
-
-.google-btn img,
-.facebook-btn img {
-width: 20px;
-margin-right: 10px;
-}
-
-/* Divider text */
-.or-text {
-margin: 10px 0;
-font-weight: bold;
-color: rgb(12, 0, 0);
-}
-
-
-input::placeholder {
-color: rgba(7, 0, 0, 0.7);
-}
-
-/* Auth Container - Transparent Background */
-.auth-container {
-width: 650px; /* Proper width */
-max-width: 1000px;
-max-width: 90%; /* Responsive width */
-text-align: center;
-color: rgb(137, 47, 47);
-max-height: 85vh; /* Limits height */
-overflow-y: auto; /* Enables scrolling */
-padding: 30px;
-background: rgba(245, 244, 244, 0); /* Fully transparent */
-border-radius: 10px;
-}
-
-/* Social Buttons (Side-by-Side on Large Screens) */
-.social-signup {
-display: flex;
-justify-content: center;
-gap: 10px;
-flex-wrap: nowrap; /* Prevents wrapping on big screens */
-}
-
-/* Social Buttons Default Style */
-.google-btn,
-.facebook-btn {
-flex: 1;
-max-width: 250px; /* Fixed width for desktop */
-min-width: 280px;
-padding: 12px;
-border-radius: 20px;
-cursor: pointer;
-font-size: 1rem;
-font-weight: bold;
-display: flex;
-align-items: center;
-justify-content: center;
-text-align: center;
-border: none;
-white-space: nowrap; /* Prevents text wrapping */
-}
-
-/* Google & Facebook Button Colors */
-.google-btn {
-background: white;
-color: black;
-border: 1px solid #ccc;
-}
-
-.facebook-btn {
-background: #1877f2;
-color: white;
-}
-
-/* Icons in Buttons */
-.google-btn img {
-width: 20px;
-margin-right: 10px;
-}
-
-.facebook-btn img {
-width: 28px;
-margin-right: 5px;
-}
-
-
-/* Stack Social Buttons on Small Screens */
-@media (max-width: 800px) {
-.social-signup {
-  flex-direction: column; /* Stack buttons */
-  gap: 15px; /* More space */
-  align-items: center; /* Center the buttons */
-}
-
-.google-btn,
-.facebook-btn {
-  max-width: 100%; /* Full width */
-}
-}
-
-
-/* Input Fields with Gray Borders & Text */
-input,
-select {
-width: 100%;
-padding: 12px;
-margin: 10px 0;
-border-radius: 10px;
-border: 2px solid rgb(234, 225, 225); /* Gray border */
-font-size: 1rem;
-color: rgb(6, 6, 6); /* Gray text */
-background: rgb(248, 248, 248); /* No background */
-}
-
-/* Input Field Styling */
-.input-group {
-position: relative;
-display: flex;
-border-radius: 10px;
-align-items: center;
-margin: 10px 0;
-}
-
-.input-group input {
-width: 100%;
-padding: 10px 40px;
-border-radius: 10px;
-border: 2px solid rgb(255, 255, 255); /* Gray border */
-color: rgb(0, 0, 0); /* Gray text */
-background: rgb(255, 255, 255); /* No background */
-}
-
-/* Input Icons */
-.input-icon {
-position: absolute;
-left: 10px;
-width: 20px;
-}
-
-/* Password Visibility Toggle */
-.toggle-password {
-position: absolute;
-right: 10px;
-width: 20px;
-cursor: pointer;
-}
-
-
-/* Login text */
-.login-text {
-margin-top: 10px;
-font-size: 0.9rem;
-color: white;
-text-align: center;
-}
-
-.login-link {
-color: #000;
-font-weight: bold;
-text-decoration: none;
-transition: color 0.3s ease;
-}
-
-.login-link:hover {
-color: #060606;
-}
-
-/* Register button */
-.register-btn {
-background: black;
-color: white;
-padding: 12px;
-border: none;
-width: 100%;
-border-radius: 10px;
-font-size: 1rem;
-cursor: pointer;
-margin-top: 15px;
-font-weight: bold;
-position: relative;
-overflow: hidden;
-transition: all 0.3s ease-in-out;
-}
-
-.register-btn:hover {
-background: #333;
-transform: scale(1.05);
-box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-}
-
-.register-btn::before {
-content: "";
-position: absolute;
-top: 50%;
-left: 50%;
-width: 200%;
-height: 200%;
-background: radial-gradient(circle, rgba(52, 49, 56, 0.842) 10%, transparent 50%);
-transform: translate(-50%, -50%) scale(0);
-transition: transform 0.5s ease-out;
-}
-
-.register-btn:hover::before {
-transform: translate(-50%, -50%) scale(1);
-}
-
-/* OTP buttons */
-.otp-btn, .verify-btn {
-width: 100%;
-padding: 10px;
-margin-top: 10px;
-font-size: 16px;
-font-weight: bold;
-cursor: pointer;
-border: none;
-border-radius: 5px;
-transition: 0.3s ease;
-}
-
-.otp-btn {
-background-color: #4CAF50;
-color: white;
-}
-
-.otp-btn:hover {
-background-color: #45a049;
-}
-
-.otp-container {
-display: flex;
-flex-direction: column;
-align-items: center;
-margin-top: 10px;
-}
-
-.otp-container input {
-width: 80%;
-padding: 10px;
-margin: 5px 0;
-font-size: 16px;
-}
-
-.verify-btn {
-background-color: #008CBA;
-color: white;
-}
-
-.verify-btn:hover {
-background-color: #007bb5;
-}
-
-/* Success message */
-.success {
-color: #28a745;
-background-color: #d4edda;
-padding: 10px;
-border-radius: 5px;
-text-align: center;
-margin: 10px 0;
-}
-
-/* Custom scrollbar */
-.auth-container::-webkit-scrollbar {
-width: 5px;
-}
-
-.auth-container::-webkit-scrollbar-thumb {
-background: rgba(255, 255, 255, 0.5);
-border-radius: 5px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-.auth-wrapper {
+  font-size: 2.2rem;
+  color: white;
+  }
+  
+  
+  
+  
+  .google-btn img,
+  .facebook-btn img {
+  width: 20px;
+  margin-right: 10px;
+  }
+  
+  /* Divider text */
+  .or-text {
+  margin: 10px 0;
+  font-weight: bold;
+  color: rgb(12, 0, 0);
+  }
+  
+  
+  input::placeholder {
+  color: rgba(7, 0, 0, 0.7);
+  }
+  
+  /* Auth Container - Transparent Background */
+  .auth-container {
+  width: 650px; /* Proper width */
+  max-width: 1000px;
+  max-width: 90%; /* Responsive width */
+  text-align: center;
+  color: rgb(137, 47, 47);
+  max-height: 85vh; /* Limits height */
+  overflow-y: auto; /* Enables scrolling */
+  padding: 30px;
+  background: rgba(245, 244, 244, 0); /* Fully transparent */
+  border-radius: 10px;
+  }
+  
+  /* Social Buttons (Side-by-Side on Large Screens) */
+  .social-signup {
+  display: flex;
   justify-content: center;
-  padding-right: 0;
-}
-
-.auth-container {
-  width: 90%;
-}
-
-.google-btn,
-.facebook-btn {
-  min-width: 100%;
-}
-}
+  gap: 10px;
+  flex-wrap: nowrap; /* Prevents wrapping on big screens */
+  }
+  
+  /* Social Buttons Default Style */
+  .google-btn,
+  .facebook-btn {
+  flex: 1;
+  max-width: 200px; /* Fixed width for desktop */
+  min-width: 280px;
+  padding: 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: none;
+  white-space: nowrap; /* Prevents text wrapping */
+  }
+  
+  /* Google & Facebook Button Colors */
+  .google-btn {
+  background: white;
+  color: black;
+  border: 1px solid #ccc;
+  }
+  
+  .facebook-btn {
+  background: #1877f2;
+  color: white;
+  }
+  
+  /* Icons in Buttons */
+  .google-btn img {
+  width: 20px;
+  margin-right: 10px;
+  }
+  
+  .facebook-btn img {
+  width: 28px;
+  margin-right: 5px;
+  }
+  
+  
+  /* Stack Social Buttons on Small Screens */
+  @media (min-width: 350px) {
+  .social-signup {
+    flex-direction: column; /* Stack buttons */
+    gap: 15px; /* More space */
+    align-items: center; /* Center the buttons */
+  }
+  
+  .google-btn,
+  .facebook-btn {
+    max-width: 100%; /* Full width */
+  }
+  }

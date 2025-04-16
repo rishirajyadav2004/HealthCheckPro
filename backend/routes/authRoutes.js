@@ -20,41 +20,41 @@ router.get("/test", (req, res) => {
 
 
 
-router.post("/save-progress", async (req, res) => {
+// router.post("/save-progress", async (req, res) => {
 
     
-    try {
-      const { userId, category, questionId, selectedOption, points } = req.body;
+//     try {
+//       const { userId, category, questionId, selectedOption, points } = req.body;
   
-      let progress = await UserProgress.findOne({ userId, category });
+//       let progress = await UserProgress.findOne({ userId, category });
   
-      if (!progress) {
-        progress = new UserProgress({
-          userId,
-          category,
-          completedQuestions: [],
-          score: 0,
-          completed: false,
-        });
-      }
+//       if (!progress) {
+//         progress = new UserProgress({
+//           userId,
+//           category,
+//           completedQuestions: [],
+//           score: 0,
+//           completed: false,
+//         });
+//       }
   
-      if (!progress.completedQuestions.some(q => q.questionId === questionId)) {
-        progress.completedQuestions.push({ questionId, selectedOption, points });
-        progress.score += points;
-      }
+//       if (!progress.completedQuestions.some(q => q.questionId === questionId)) {
+//         progress.completedQuestions.push({ questionId, selectedOption, points });
+//         progress.score += points;
+//       }
   
-      if (progress.completedQuestions.length === 5) {
-        progress.completed = true;
-      }
+//       if (progress.completedQuestions.length === 5) {
+//         progress.completed = true;
+//       }
   
-      await progress.save();
-      res.json({ success: true, progress });
+//       await progress.save();
+//       res.json({ success: true, progress });
   
-    } catch (error) {
-      console.error("Error saving progress:", error);
-      res.status(500).json({ success: false, error: error.message });
-    }
-  });
+//     } catch (error) {
+//       console.error("Error saving progress:", error);
+//       res.status(500).json({ success: false, error: error.message });
+//     }
+//   });
 
 
 // ✅ Send OTP (Valid for 5 Minutes)
@@ -176,55 +176,37 @@ router.post("/register", async (req, res) => {
 });
 
 
+// In your login route (backend/routes/authRoutes.js)
 router.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ message: "⚠ Email and password are required" });
-    }
-
     try {
+        const { email, password } = req.body;
         const user = await User.findOne({ email });
+        
         if (!user) {
-            return res.status(401).json({ message: "❌ Invalid email or password" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        console.log("✅ User found:", user.email);
-        console.log("🔹 Entered password (raw):", password);
-        console.log("🔹 Stored hashed password:", user.password);
-
-        if (typeof password !== "string") {
-            console.log("⚠ Entered password is not a string!");
-        }
-
-        // 🛠 Debug bcrypt.compare()
-        const isMatch = await bcrypt.compare(password.trim(), user.password);
-        console.log("🔍 bcrypt.compare() result:", isMatch);
-
+        const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            console.log("❌ Password does not match!");
-            return res.status(401).json({ message: "❌ Invalid email or password" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // Generate token with user ID
         const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET || "default_secret",
+            { id: user._id }, // Use the MongoDB _id
+            process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
 
-        console.log("✅ Login successful! Token generated.");
-
-        // Return token, user ID, and name
         res.json({
-            message: "✅ Login successful!",
             token,
-            user: { id: user._id, name: user.name },
+            user: {
+                id: user._id, // Send the ObjectId
+                name: user.name,
+                email: user.email
+            }
         });
-
-    } catch (err) {
-        console.error("❌ Error in login:", err);
-        res.status(500).json({ message: "❌ Internal server error" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -299,18 +281,18 @@ router.post("/reset-password/:token", async (req, res) => {
 
   
 
-// Get questions for a specific category
-router.get("/questions/:category", (req, res) => {
-    const { category } = req.params;
-    res.json(questions[category] || []);
-  });
+// // Get questions for a specific category
+// router.get("/questions/:category", (req, res) => {
+//     const { category } = req.params;
+//     res.json(questions[category] || []);
+//   });
   
 
-  // Get user progress
-  router.get("/progress/:userId", async (req, res) => {
-    const { userId } = req.params;
-    const progress = await UserProgress.find({ userId });
-    res.json(progress);
-  });
+//   // Get user progress
+//   router.get("/progress/:userId", async (req, res) => {
+//     const { userId } = req.params;
+//     const progress = await UserProgress.find({ userId });
+//     res.json(progress);
+//   });
 
 module.exports = router;

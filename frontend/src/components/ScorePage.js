@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Doughnut, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from "chart.js";
@@ -25,37 +25,129 @@ const getHealthReview = (totalScore) => {
   return "Poor. It's recommended to consult a healthcare professional and make lifestyle changes.";
 };
 
+const getCategoryTips = (category, score) => {
+  let level = 'low';
+  if (score > 75) level = 'high';
+  else if (score > 50) level = 'medium';
+  
+  const tips = {
+    PhysicalFitness: {
+      low: [
+        "Start with short walks daily to build stamina.",
+        "Consider beginner-level home workouts.",
+      ],
+      medium: [
+        "Incorporate strength training twice a week.",
+        "Increase your daily steps gradually.",
+      ],
+      high: [
+        "Keep up the great work! Try setting new personal records.",
+        "Maintain consistency with varied workouts.",
+      ],
+    },
+    Nutrition: {
+      low: [
+        "Avoid processed foods and sugary drinks.",
+        "Plan simple, healthy meals in advance.",
+      ],
+      medium: [
+        "Try including more fruits and vegetables daily.",
+        "Watch portion sizes and balance meals.",
+      ],
+      high: [
+        "Your nutrition is on point! Keep exploring healthy recipes.",
+        "Share your healthy eating journey to inspire others.",
+      ],
+    },
+    MentalWellBeing: {
+      low: [
+        "Try 5-minute guided meditations daily.",
+        "Talk to a trusted friend or counselor.",
+      ],
+      medium: [
+        "Practice gratitude journaling each morning.",
+        "Take regular breaks and avoid burnout.",
+      ],
+      high: [
+        "Great mental balance! Keep doing what works.",
+        "Explore mindfulness retreats or advanced practices.",
+      ],
+    },
+    Lifestyle: {
+      low: [
+        "Avoid late-night screen time and reduce caffeine.",
+        "Aim for at least 7 hours of sleep nightly.",
+      ],
+      medium: [
+        "Try a consistent sleep and wake schedule.",
+        "Incorporate active hobbies into your daily routine.",
+      ],
+      high: [
+        "Excellent lifestyle balance! Stay consistent.",
+        "You could try mentoring others toward healthier habits.",
+      ],
+    },
+    Biomarkers: {
+      low: [
+        "Consult your physician for a baseline checkup.",
+        "Monitor key vitals regularly with a health tracker.",
+      ],
+      medium: [
+        "Keep tracking improvements in cholesterol and BP.",
+        "Focus on steady habits that improve long-term metrics.",
+      ],
+      high: [
+        "Awesome! Your biomarkers are strong—maintain this momentum.",
+        "Make sure to stay consistent with checkups and data logs.",
+      ],
+    }
+  };
+
+  return tips[category][level];
+};
 
 const ScorePage = () => {
-  const { userId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [userScores, setUserScores] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [effectiveUserId, setEffectiveUserId] = useState(userId || '');
-
-  useEffect(() => {
-    if (!userId) {
-      const storedUserId = localStorage.getItem('healthCheckUserId');
-      if (storedUserId) {
-        setEffectiveUserId(storedUserId);
-      }
-    }
-  }, [userId]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        const token = sessionStorage.getItem('token');
+        const storedUserId = sessionStorage.getItem('userId');
         
-        if (location.state?.userScore) {
-          setUserScores(location.state.userScore);
+        if (!token || !storedUserId) {
+          navigate('/login');
+          return;
+        }
+
+        setUserId(storedUserId);
+
+        // First check for scores in location state (from just completed assessment)
+        if (location.state?.scores) {
+          setUserScores(location.state.scores);
+          return;
+        }
+
+        // If no scores in location state, fetch from API
+        const response = await axios.get(
+          `http://localhost:5000/api/assessment/scores/${storedUserId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        if (response.data?.scores) {
+          setUserScores(response.data.scores);
         } else {
-          const response = await axios.get(
-            `http://localhost:5000/api/assessment/scores/${effectiveUserId || 'guest'}`
-          );
-          setUserScores(response.data.scores || {});
+          setUserScores({});
         }
       } catch (err) {
         console.error("Error fetching scores:", err);
@@ -65,26 +157,19 @@ const ScorePage = () => {
       }
     };
 
-    if (effectiveUserId) {
-      fetchData();
-    }
-  }, [effectiveUserId, location.state]);
+    fetchData();
+  }, [location.state, navigate]);
 
   const totalScore = categories.reduce((sum, category) => {
     return sum + (userScores[category.key] || 0);
   }, 0);
 
+  // Check if we have valid scores to display
+  const hasScores = Object.keys(userScores).length > 0 && 
+                   !categories.every(category => (userScores[category.key] || 0) === 0);
 
-    // Check if all scores are 0 or empty
-    const allScoresZero = categories.every(category => {
-      const score = userScores[category.key] || 0;
-      return score === 0;
-    });
-  
-
-  const maxScore = 5 * 5 * 5; // 5 categories * 5 questions * 5 max points per question
-
-
+  // Prepare chart data
+  const maxScore = 5 * 5 * 5;
   const totalScoreData = {
     labels: ['Your Score', 'Remaining'],
     datasets: [
@@ -141,8 +226,7 @@ const ScorePage = () => {
     );
   }
 
-  // Show empty state message if all scores are 0
-  if (allScoresZero) {
+  if (!hasScores) {
     return (
       <div className="score-container">
         <div className="empty-score-message">
@@ -170,6 +254,7 @@ const ScorePage = () => {
       <div className="report-header">
         <h1>Your Health Assessment Report</h1>
         <p className="report-date">Generated on: {new Date().toLocaleDateString()}</p>
+        <p className="user-id">User ID: {userId}</p>
       </div>
 
       <div className="overall-score-section">
@@ -245,9 +330,10 @@ const ScorePage = () => {
           {categories.map((category, index) => {
             const score = userScores[category.key] || 0;
             const percentage = Math.round((score / 25) * 100);
+            const tips = getCategoryTips(category.key, percentage);
             
             return (
-              <div key={index} className="category-cards">
+              <div key={index} className="category-card">
                 <h3>{category.name}</h3>
                 <div className="category-chart">
                   <Doughnut 
@@ -289,33 +375,14 @@ const ScorePage = () => {
                     ></div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="recommendations-section">
-        <h2>Recommendations</h2>
-        <div className="recommendations-grid">
-          {categories.map((category, index) => {
-            const score = userScores[category.key] || 0;
-            let recommendation = '';
-            
-            if (score >= 20) {
-              recommendation = `Excellent ${category.name} habits! Keep maintaining your current routine.`;
-            } else if (score >= 15) {
-              recommendation = `Good ${category.name} habits. Consider small improvements for better results.`;
-            } else if (score >= 10) {
-              recommendation = `Your ${category.name} needs attention. Focus on this area for better health.`;
-            } else {
-              recommendation = `Your ${category.name} requires significant improvement. Consider consulting a specialist.`;
-            }
-            
-            return (
-              <div key={index} className="recommendation-card" style={{ borderLeft: `4px solid ${category.color}` }}>
-                <h4>{category.name}</h4>
-                <p>{recommendation}</p>
+                <div className="category-tips">
+                  <h4>Personalized Tips:</h4>
+                  <ul>
+                    {tips.map((tip, i) => (
+                      <li key={i}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             );
           })}
@@ -329,9 +396,37 @@ const ScorePage = () => {
         >
           Back to Dashboard
         </button>
+       
         <button 
           className="retake-btn"
-          onClick={() => navigate("/assessment")}
+          onClick={async () => {
+            try {
+              const token = sessionStorage.getItem('token');
+              if (!token) {
+                navigate('/login');
+                return;
+              }
+              
+              await axios.post(
+                'http://localhost:5000/api/assessment/reset-assessment',
+                {},
+                { 
+                  headers: { 
+                    Authorization: `Bearer ${token}` 
+                  } 
+                }
+              );
+              
+              navigate("/assessment", { 
+                state: { 
+                  forceRefresh: true
+                } 
+              });
+            } catch (error) {
+              console.error("Error starting new assessment:", error);
+              alert(`Failed to start new assessment: ${error.message}`);
+            }
+          }}
         >
           Retake Assessment
         </button>

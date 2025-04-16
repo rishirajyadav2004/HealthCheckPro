@@ -59,15 +59,13 @@ const AssessmentPage = () => {
 
     // Initialize user ID and fetch progress
     useEffect(() => {
-        const storedUserId = localStorage.getItem('healthCheckUserId');
-        if (storedUserId) {
-            setUserId(storedUserId);
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+          setUserId(userId);
         } else {
-            const newUserId = `user_${Math.random().toString(36).substr(2, 9)}`;
-            localStorage.setItem('healthCheckUserId', newUserId);
-            setUserId(newUserId);
+          navigate('/login'); // Redirect if not authenticated
         }
-    }, []);
+      }, [navigate]);
 
     const fetchQuestions = useCallback(async (category) => {
         try {
@@ -83,71 +81,136 @@ const AssessmentPage = () => {
         }
     }, []);
 
-    const fetchProgress = useCallback(async () => {
-        if (!userId) return;
+    // const fetchProgress = useCallback(async () => {
+    //     if (!userId) return;
         
+    //     try {
+    //         setLoading(true);
+    //         const res = await axios.get(
+    //             `http://localhost:5000/api/assessment/progress/${userId}`
+    //         );
+            
+    //         if (res.data) {
+    //             setCompletedCategories(res.data.completedCategories || {});
+    //             setUserScore(res.data.scores || {});
+                
+    //             // Find the first incomplete category
+    //             const firstIncompleteIndex = categories.findIndex(
+    //                 cat => !res.data.completedCategories?.[cat]
+    //             );
+                
+    //             // If continuing assessment, start from first incomplete category
+    //             const newIndex = location.state?.continueAssessment 
+    //                 ? (firstIncompleteIndex >= 0 ? firstIncompleteIndex : 0)
+    //                 : 0;
+                    
+    //             setCurrentCategoryIndex(newIndex);
+                
+    //             const currentCategory = categories[newIndex];
+    //             await fetchQuestions(currentCategory);
+                
+    //             const questionsRes = await axios.get(
+    //                 `http://localhost:5000/api/assessment/questions/${currentCategory}`
+    //             );
+    //             const categoryQuestions = questionsRes.data;
+                
+    //             setAnswers(res.data.answers || {});
+                
+    //             if (res.data.answers) {
+    //                 let firstUnansweredIndex = categoryQuestions.findIndex(
+    //                     q => !res.data.answers[q.id]
+    //                 );
+                    
+    //                 if (firstUnansweredIndex === -1 && !res.data.completedCategories[currentCategory]) {
+    //                     firstUnansweredIndex = 0;
+    //                 }
+                    
+    //                 setCurrentQuestionIndex(firstUnansweredIndex >= 0 ? firstUnansweredIndex : 0);
+    //             } else {
+    //                 setCurrentQuestionIndex(0);
+    //             }
+    //         }
+    //         setLoading(false);
+    //     } catch (error) {
+    //         console.error("Error fetching progress:", error);
+    //         setLoading(false);
+    //     }
+    // }, [userId, fetchQuestions, location.state?.continueAssessment]);
+
+
+// Update the useEffect that handles initialization
+useEffect(() => {
+    const initializeAssessment = async () => {
+        if (!userId) return;
+
         try {
             setLoading(true);
-            const res = await axios.get(
-                `http://localhost:5000/api/assessment/progress/${userId}`
-            );
             
-            if (res.data) {
-                setCompletedCategories(res.data.completedCategories || {});
-                setUserScore(res.data.scores || {});
-                
-                const firstIncompleteIndex = categories.findIndex(
-                    cat => !res.data.completedCategories?.[cat]
-                );
-                
-                const newIndex = firstIncompleteIndex >= 0 ? firstIncompleteIndex : 0;
-                setCurrentCategoryIndex(newIndex);
-                
-                const currentCategory = categories[newIndex];
-                await fetchQuestions(currentCategory);
-                
-                const questionsRes = await axios.get(
-                    `http://localhost:5000/api/assessment/questions/${currentCategory}`
-                );
-                const categoryQuestions = questionsRes.data;
-                
-                setAnswers(res.data.answers || {});
-                
-                if (res.data.answers) {
-                    let firstUnansweredIndex = categoryQuestions.findIndex(
-                        q => !res.data.answers[q.id]
-                    );
-                    
-                    if (firstUnansweredIndex === -1 && !res.data.completedCategories[currentCategory]) {
-                        firstUnansweredIndex = 0;
-                    }
-                    
-                    setCurrentQuestionIndex(firstUnansweredIndex >= 0 ? firstUnansweredIndex : 0);
-                } else {
-                    setCurrentQuestionIndex(0);
-                }
-            }
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching progress:", error);
-            setLoading(false);
-        }
-    }, [userId, fetchQuestions]);
-
-    useEffect(() => {
-        if (userId) {
             if (location.state?.forceRefresh) {
+                // Reset all state for new assessment
                 setCurrentCategoryIndex(0);
                 setCurrentQuestionIndex(0);
                 setAnswers({});
                 setCompletedCategories({});
                 setUserScore({});
-                fetchQuestions(categories[0]);
+                await fetchQuestions(categories[0]);
             } else {
-                fetchProgress();
+                // Get current progress
+                const token = sessionStorage.getItem('token');
+                const progressRes = await axios.get(
+                    `http://localhost:5000/api/assessment/current-progress`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                );
+
+                if (progressRes.data.success) {
+                    const progressData = progressRes.data.data;
+                    
+                    // Set completed categories and scores
+                    setCompletedCategories(progressData.completedCategories);
+                    setUserScore(progressData.scores);
+                    
+                    // Determine where to start
+                    let startCategoryIndex = 0;
+                    if (location.state?.continueAssessment) {
+                        startCategoryIndex = location.state.startCategoryIndex || 
+                                            progressData.nextCategoryIndex || 0;
+                    }
+                    
+                    setCurrentCategoryIndex(startCategoryIndex);
+                    await fetchQuestions(categories[startCategoryIndex]);
+                    
+                    // Set answers if any
+                    setAnswers(progressData.answers || {});
+                    
+                    // Find first unanswered question in this category
+                    const questionsRes = await axios.get(
+                        `http://localhost:5000/api/assessment/questions/${categories[startCategoryIndex]}`
+                    );
+                    const categoryQuestions = questionsRes.data;
+                    
+                    let firstUnansweredIndex = categoryQuestions.findIndex(
+                        q => !progressData.answers[q.id]
+                    );
+                    
+                    setCurrentQuestionIndex(firstUnansweredIndex >= 0 ? firstUnansweredIndex : 0);
+                }
             }
+        } catch (error) {
+            console.error("Initialization error:", error);
+            // Fallback to starting from beginning
+            setCurrentCategoryIndex(0);
+            setCurrentQuestionIndex(0);
+            await fetchQuestions(categories[0]);
+        } finally {
+            setLoading(false);
         }
-    }, [userId, location.state, fetchProgress, fetchQuestions]);
+    };
+
+    initializeAssessment();
+}, [userId, location.state, fetchQuestions]);
+    
 
     const handleAnswerSelect = (questionId, selectedOption, points) => {
         setAnswers(prev => ({
@@ -156,43 +219,56 @@ const AssessmentPage = () => {
         }));
     };
 
-    const resetCurrentCategory = async () => {
-        try {
-            setLoading(true);
-            const currentCategory = categories[currentCategoryIndex];
+    // const resetCurrentCategory = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const currentCategory = categories[currentCategoryIndex];
             
-            if (!window.confirm(`Are you sure you want to reset your ${currentCategory.replace(/([A-Z])/g, ' $1').trim()} progress?`)) {
-                setLoading(false);
-                return;
-            }
+    //         if (!window.confirm(`Are you sure you want to reset your ${currentCategory.replace(/([A-Z])/g, ' $1').trim()} progress?`)) {
+    //             setLoading(false);
+    //             return;
+    //         }
     
-            await axios.delete(
-                `http://localhost:5000/api/assessment/reset-category/${userId}/${currentCategory}`
-            );
+    //         // Reset only the current category's answers
+    //         const updatedAnswers = {...answers};
+    //         questions.forEach(q => {
+    //             delete updatedAnswers[q.id];
+    //         });
+    
+    //         // Update backend
+    //         await axios.delete(
+    //             `http://localhost:5000/api/assessment/reset-category/${userId}/${currentCategory}`
+    //         );
             
-            setAnswers({});
-            setCurrentQuestionIndex(0);
-            await fetchQuestions(currentCategory);
+    //         // Update state
+    //         setAnswers(updatedAnswers);
+    //         setCurrentQuestionIndex(0);
             
-            const progressRes = await axios.get(
-                `http://localhost:5000/api/assessment/progress/${userId}`
-            );
-            setCompletedCategories(progressRes.data.completedCategories || {});
+    //         // Fetch fresh questions
+    //         await fetchQuestions(currentCategory);
             
-        } catch (error) {
-            console.error("Error resetting category:", error);
-            alert(`Failed to reset category: ${error.message}`);
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         // Update completed categories
+    //         const progressRes = await axios.get(
+    //             `http://localhost:5000/api/assessment/progress/${userId}`
+    //         );
+            
+    //         setCompletedCategories(progressRes.data.completedCategories || {});
+    //         setUserScore(progressRes.data.scores || {});
+            
+    //     } catch (error) {
+    //         console.error("Error resetting category:", error);
+    //         alert(`Failed to reset category: ${error.message}`);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
-    const calculateScore = () => {
-        return Object.values(answers).reduce(
-            (acc, answer) => acc + (answer.points || 0),
-            0
-        );
-    };
+    // const calculateScore = () => {
+    //     return Object.values(answers).reduce(
+    //         (acc, answer) => acc + (answer.points || 0),
+    //         0
+    //     );
+    // };
 
     const handlePreviousQuestion = () => {
         if (currentQuestionIndex > 0) {
@@ -200,23 +276,43 @@ const AssessmentPage = () => {
         }
     };
 
+
+    
+
     const handleNextQuestion = async () => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             return;
         }
-      
-        const totalScore = calculateScore();
-      
+    
         try {
             setLoading(true);
             const currentCategory = categories[currentCategoryIndex];
+            const token = sessionStorage.getItem('token');
             
+            // Validate all questions are answered
             const unansweredQuestions = questions.filter(q => !answers[q.id]);
             if (unansweredQuestions.length > 0) {
                 throw new Error(`Please answer all ${unansweredQuestions.length} remaining questions`);
             }
-      
+    
+            // Calculate score
+            const totalScore = Object.values(answers).reduce(
+                (acc, answer) => acc + (answer.points || 0),
+                0
+            );
+
+            const updatedScores = {
+                ...userScore,
+                [currentCategory]: totalScore
+              };
+              
+              // Calculate overall average of completed categories
+              const completedCategoryScores = Object.values(updatedScores);
+              const overallScore = Math.round(completedCategoryScores.reduce((a, b) => a + b, 0) / completedCategoryScores.length);
+              
+    
+            // Prepare answers payload
             const answersPayload = {};
             questions.forEach(question => {
                 if (answers[question.id]) {
@@ -226,56 +322,96 @@ const AssessmentPage = () => {
                     };
                 }
             });
-      
+    
+            // Submit progress
             const response = await axios.post(
                 "http://localhost:5000/api/assessment/save-progress",
                 {
-                    userId,
-                    currentCategory,
-                    answers: answersPayload,
-                    scores: {
-                        ...userScore,
-                        [currentCategory]: totalScore
-                    }
+                  currentCategory,
+                  answers: answersPayload,
+                  scores: {
+                    ...updatedScores,
+                    Overall: overallScore
+                  }
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`
+                  }
                 }
-            );
-      
-            if (response.data.nextCategory) {
-                const nextIndex = categories.indexOf(response.data.nextCategory);
-                setCurrentCategoryIndex(nextIndex);
-                setCurrentQuestionIndex(0);
-                setAnswers({});
+              );
+              
+    
+            // Handle response
+            if (response.data.completedCategories) {
                 setCompletedCategories(response.data.completedCategories);
-                await fetchQuestions(response.data.nextCategory);
-            } else {
-                navigate("/score", { 
-                    state: { 
-                        userScore: response.data.scores,
-                        completedCategories: response.data.completedCategories 
-                    } 
-                });
+                setUserScore(response.data.scores || {});
+                
+                // Find the first incomplete category
+                const nextCategory = categories.find(
+                    cat => !response.data.completedCategories[cat]
+                );
+                
+                if (nextCategory) {
+                    const nextIndex = categories.indexOf(nextCategory);
+                    setCurrentCategoryIndex(nextIndex);
+                    setCurrentQuestionIndex(0);
+                    setAnswers({});
+                    await fetchQuestions(nextCategory);
+                } else {
+                    navigate("/score", { 
+                        state: { 
+                            scores: response.data.scores,
+                            completedCategories: response.data.completedCategories 
+                        } 
+                    });
+                }
+                // Save assessment history when all categories are completed
+                if (!nextCategory) {
+                    await axios.post(
+                        "http://localhost:5000/api/assessment-history",
+                        {
+                            scores: response.data.scores,
+                            responses: Object.entries(answers).map(([questionId, answer]) => ({
+                                questionId,
+                                selectedOption: answer.selectedOption,
+                                points: answer.points
+                            }))
+                        },
+                        {
+                            headers: { Authorization: `Bearer ${token}` }
+                        }
+                    );
+                }
             }
         } catch (error) {
             console.error("Progress save error:", error);
-            alert(`Error: ${error.message || "Failed to save progress"}`);
+            alert(`Error: ${error.response?.data?.message || error.message || "Failed to save progress"}`);
         } finally {
             setLoading(false);
         }
     };
 
+    
     const resetAssessment = async () => {
         try {
             setLoading(true);
             await axios.post(`http://localhost:5000/api/assessment/reset-assessment/${userId}`);
+            
+            // Reset all state
             setCurrentCategoryIndex(0);
             setCurrentQuestionIndex(0);
             setAnswers({});
             setCompletedCategories({});
             setUserScore({});
+            
+            // Fetch fresh questions for the first category
             await fetchQuestions(categories[0]);
             setShowResetModal(false);
+            
         } catch (error) {
             console.error("Error resetting assessment:", error);
+            alert(`Failed to reset assessment: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -332,7 +468,7 @@ const AssessmentPage = () => {
             <nav className="assessment-navbar">
                 <img src={logo} alt="Health Check Pro Logo" className="nav-logo" />
                 <span className="nav-title">Health Check Pro</span>
-                <div className="reset-buttons">
+                {/* <div className="reset-buttons">
                     <button 
                         className="reset-btn" 
                         onClick={resetCurrentCategory} 
@@ -347,7 +483,7 @@ const AssessmentPage = () => {
                     >
                         Reset All
                     </button>
-                </div>
+                </div> */}
             </nav>
 
             <div className="assessment-content">
@@ -391,21 +527,21 @@ const AssessmentPage = () => {
                             {/* Progress Bar */}
                             {/* Progress Bar */}
                             <div className="progress-container">
-                                <div className="progress-track">
-                                    <div 
+                            <div className="progress-track">
+                                <div 
                                     className="progress-fills" 
-                                    style={{ width: `${(currentQuestionIndex / 4) * 100}%` }}
-                                    ></div>
-                                </div>
-                                <div className="progress-dots">
-                                    {[0, 1, 2, 3, 4].map((index) => (
+                                    style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                                ></div>
+                            </div>
+                            <div className="progress-dots">
+                                {questions.map((_, index) => (
                                     <div 
                                         key={index}
                                         className={`progress-dot ${currentQuestionIndex >= index ? 'active' : ''}`}
                                     ></div>
-                                    ))}
-                                </div>
+                                ))}
                             </div>
+                        </div>
                             
                             <div className="question-layout-container">
                                 <div className="image-column">

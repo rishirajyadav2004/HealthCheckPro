@@ -1,188 +1,188 @@
 
 {
-  "PhysicalFitness": [
-    {
-      "id": 1,
-      "question": "How often do you exercise per week?",
-      "image": "E3.jpg",
-      "options": ["Never", "1-2 times", "3-4 times", "5+ times"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 2,
-      "question": "How long is your average workout session?",
-      "image": "E2.jpg",
-      "options": ["Less than 10 mins", "10-30 mins", "30-60 mins", "More than 1 hour"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 3,
-      "question": "How do you rate your endurance level?",
-      "image": "E1.jpg",
-      "options": ["Very Low", "Low", "Moderate", "High"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 4,
-      "question": "Do you experience shortness of breath after minimal activity?",
-      "image": "E4.jpg",
-      "options": ["Always", "Often", "Sometimes", "Rarely"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 5,
-      "question": "Do you perform stretching exercises regularly?",
-      "image": "E5.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Always"],
-      "points": [0, 2, 4, 5]
-    }
-  ],
-  "Nutrition": [
-    {
-      "id": 6,
-      "question": "How often do you eat fast food?",
-      "image": "F2.jpg",
-      "options": ["Every day", "Few times a week", "Once a week", "Rarely"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 7,
-      "question": "Do you consume enough fruits and vegetables?",
-      "image": "F1.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Always"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 8,
-      "question": "How often do you drink sugary beverages?",
-      "image": "F5.jpg",
-      "options": ["Every day", "Few times a week", "Once a week", "Rarely"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 9,
-      "question": "How much water do you drink daily?",
-      "image": "F3.jpg",
-      "options": ["Less than 1L", "1-2L", "2-3L", "More than 3L"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 10,
-      "question": "Do you follow a balanced diet?",
-      "image": "F4.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Always"],
-      "points": [0, 2, 4, 5]
-    }
-  ],
-  "MentalWellBeing": [
-    {
-      "id": 11,
-      "question": "How often do you feel stressed?",
-      "image": "M1.jpg",
-      "options": ["Always", "Often", "Sometimes", "Rarely"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 12,
-      "question": "How well do you sleep at night?",
-      "image": "S1.jpg",
-      "options": ["Very poor", "Poor", "Good", "Excellent"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 13,
-      "question": "How often do you feel happy and content?",
-      "image": "M4.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Always"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 14,
-      "question": "Do you practice mindfulness or meditation?",
-      "image": "M2.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Often"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 15,
-      "question": "Do you have a strong support system?",
-      "image": "M3.jpg",
-      "options": ["No one", "A few people", "Moderate support", "Strong support"],
-      "points": [0, 2, 4, 5]
-    }
-  ],
-  "Lifestyle": [
-    {
-      "id": 16,
-      "question": "How many hours do you spend sitting daily?",
-      "image": "L3.jpg",
-      "options": ["More than 10 hours", "6-10 hours", "3-6 hours", "Less than 3 hours"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 17,
-      "question": "How often do you engage in social activities?",
-      "image": "L2.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Often"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 18,
-      "question": "How often do you travel or explore new places?",
-      "image": "L1.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Often"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 19,
-      "question": "Do you have hobbies that relax you?",
-      "image": "L4.jpg",
-      "options": ["No", "A few", "Some", "Many"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 20,
-      "question": "Do you take breaks from work or screen time?",
-      "image": "L5.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Always"],
-      "points": [0, 2, 4, 5]
-    }
-  ],
-  "Biomarkers": [
-    {
-      "id": 21,
-      "question": "Do you have regular health checkups?",
-      "image": "S5.jpg",
-      "options": ["Never", "Rarely", "Sometimes", "Always"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 22,
-      "question": "How is your blood pressure?",
-      "image": "S2.jpg",
-      "options": ["Very high", "High", "Normal", "Optimal"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 23,
-      "question": "Do you have any chronic diseases?",
-      "image": "S3.jpg",
-      "options": ["Yes, severe", "Yes, moderate", "Mild issues", "No"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 24,
-      "question": "How often do you get sick?",
-      "image": "S4.jpg",
-      "options": ["Very often", "Often", "Rarely", "Almost never"],
-      "points": [0, 2, 4, 5]
-    },
-    {
-      "id": 25,
-      "question": "Do you smoke or consume alcohol?",
-      "image": "M5.jpg",
-      "options": ["Regularly", "Sometimes", "Rarely", "Never"],
-      "points": [0, 2, 4, 5]
-    }
-  ]
-}
+    "PhysicalFitness": [
+      {
+        "id": 1,
+        "question": "How often do you exercise per week?",
+        "image": "E3.jpg",
+        "options": ["Never", "1-2 times", "3-4 times", "5+ times"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 2,
+        "question": "How long is your average workout session?",
+        "image": "E2.jpg",
+        "options": ["Less than 10 mins", "10-30 mins", "30-60 mins", "More than 1 hour"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 3,
+        "question": "How do you rate your endurance level?",
+        "image": "E1.jpg",
+        "options": ["Very Low", "Low", "Moderate", "High"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 4,
+        "question": "Do you experience shortness of breath after minimal activity?",
+        "image": "E4.jpg",
+        "options": ["Always", "Often", "Sometimes", "Rarely"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 5,
+        "question": "Do you perform stretching exercises regularly?",
+        "image": "E5.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Always"],
+        "points": [0, 2, 4, 5]
+      }
+    ],
+    "Nutrition": [
+      {
+        "id": 6,
+        "question": "How often do you eat fast food?",
+        "image": "F2.jpg",
+        "options": ["Every day", "Few times a week", "Once a week", "Rarely"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 7,
+        "question": "Do you consume enough fruits and vegetables?",
+        "image": "F1.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Always"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 8,
+        "question": "How often do you drink sugary beverages?",
+        "image": "F5.jpg",
+        "options": ["Every day", "Few times a week", "Once a week", "Rarely"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 9,
+        "question": "How much water do you drink daily?",
+        "image": "F3.jpg",
+        "options": ["Less than 1L", "1-2L", "2-3L", "More than 3L"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 10,
+        "question": "Do you follow a balanced diet?",
+        "image": "F4.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Always"],
+        "points": [0, 2, 4, 5]
+      }
+    ],
+    "MentalWellBeing": [
+      {
+        "id": 11,
+        "question": "How often do you feel stressed?",
+        "image": "M1.jpg",
+        "options": ["Always", "Often", "Sometimes", "Rarely"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 12,
+        "question": "How well do you sleep at night?",
+        "image": "S1.jpg",
+        "options": ["Very poor", "Poor", "Good", "Excellent"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 13,
+        "question": "How often do you feel happy and content?",
+        "image": "M4.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Always"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 14,
+        "question": "Do you practice mindfulness or meditation?",
+        "image": "M2.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Often"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 15,
+        "question": "Do you have a strong support system?",
+        "image": "M3.jpg",
+        "options": ["No one", "A few people", "Moderate support", "Strong support"],
+        "points": [0, 2, 4, 5]
+      }
+    ],
+    "Lifestyle": [
+      {
+        "id": 16,
+        "question": "How many hours do you spend sitting daily?",
+        "image": "L3.jpg",
+        "options": ["More than 10 hours", "6-10 hours", "3-6 hours", "Less than 3 hours"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 17,
+        "question": "How often do you engage in social activities?",
+        "image": "L2.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Often"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 18,
+        "question": "How often do you travel or explore new places?",
+        "image": "L1.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Often"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 19,
+        "question": "Do you have hobbies that relax you?",
+        "image": "L4.jpg",
+        "options": ["No", "A few", "Some", "Many"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 20,
+        "question": "Do you take breaks from work or screen time?",
+        "image": "L5.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Always"],
+        "points": [0, 2, 4, 5]
+      }
+    ],
+    "Biomarkers": [
+      {
+        "id": 21,
+        "question": "Do you have regular health checkups?",
+        "image": "S5.jpg",
+        "options": ["Never", "Rarely", "Sometimes", "Always"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 22,
+        "question": "How is your blood pressure?",
+        "image": "S2.jpg",
+        "options": ["Very high", "High", "Normal", "Optimal"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 23,
+        "question": "Do you have any chronic diseases?",
+        "image": "S3.jpg",
+        "options": ["Yes, severe", "Yes, moderate", "Mild issues", "No"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 24,
+        "question": "How often do you get sick?",
+        "image": "S4.jpg",
+        "options": ["Very often", "Often", "Rarely", "Almost never"],
+        "points": [0, 2, 4, 5]
+      },
+      {
+        "id": 25,
+        "question": "Do you smoke or consume alcohol?",
+        "image": "M5.jpg",
+        "options": ["Regularly", "Sometimes", "Rarely", "Never"],
+        "points": [0, 2, 4, 5]
+      }
+    ]
+  }

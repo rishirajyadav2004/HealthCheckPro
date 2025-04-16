@@ -1,0 +1,194 @@
+
+
+/* src/styles/ProfileCard.css */
+.profile-card-container {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 18px;
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+}
+
+.profile-card-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 10px 10px -6px rgba(0, 0, 0, 0.08);
+}
+
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin: 0 auto 1.75rem;
+  border: 5px solid rgba(59, 130, 246, 0.2);
+  background-color: #f3f4f6;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.profile-avatar.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+}
+
+.profile-avatar.placeholder .initials {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #4b5563;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.profile-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.profile-email {
+  color: #6b7280;
+  margin-bottom: 1.25rem;
+  font-size: 1.05rem;
+}
+
+.profile-phone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #4b5563;
+  margin-bottom: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(59, 130, 246, 0.05);
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.profile-phone:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.profile-phone .phone-icon {
+  fill: #3b82f6;
+  width: 18px;
+  height: 18px;
+}
+
+.profile-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  color: white;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 4px 6px -1px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.1);
+}
+
+.profile-edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 15px -3px rgba(59, 130, 246, 0.3),
+    0 4px 6px -2px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
+}
+
+.profile-edit-btn:active {
+  transform: translateY(0);
+}
+
+/* Dark mode styles */
+.dark .profile-card-container {
+  background: linear-gradient(145deg, #1f2937, #111827);
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+.dark .profile-card-container::before {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.dark .profile-avatar.placeholder {
+  background: linear-gradient(135deg, #374151, #4b5563);
+}
+
+.dark .profile-avatar.placeholder .initials {
+  color: #d1d5db;
+}
+
+.dark .profile-name {
+  color: #f9fafb;
+}
+
+.dark .profile-email {
+  color: #9ca3af;
+}
+
+.dark .profile-phone {
+  color: #e5e7eb;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.dark .profile-phone:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark .profile-phone .phone-icon {
+  fill: #60a5fa;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-card-container {
+  animation: fadeIn 0.6s ease-out forwards;
+}

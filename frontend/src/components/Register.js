@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/register.css";
@@ -21,6 +21,7 @@ const Register = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isConfirmPasswordFocused, setIsConfirmPasswordFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -33,6 +34,13 @@ const Register = () => {
     confirmPassword: "",
     otp: "",
   });
+
+  useEffect(() => {
+    document.body.classList.add("register-page");
+    return () => {
+      document.body.classList.remove("register-page");
+    };
+  }, []);
 
   const handleChange = (e) => {
     setFormData((prevState) => ({
@@ -59,7 +67,7 @@ const Register = () => {
     if (confirmPassword !== formData.password) {
       setConfirmPasswordError("⚠ Passwords do not match.");
     } else {
-      setConfirmPasswordError(""); // Remove error if they match
+      setConfirmPasswordError("");
     }
   };
 
@@ -73,12 +81,15 @@ const Register = () => {
     }
 
     try {
+      setIsLoading(true);
       await axios.post("http://localhost:5000/api/auth/send-otp", { email: formData.email });
       setSuccessMessage("OTP sent successfully! Check your email.");
       setOtpSent(true);
       setOtpVerified(false);
     } catch (error) {
       setError(error.response?.data?.message || "Error sending OTP");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -109,29 +120,31 @@ const Register = () => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
+    setIsLoading(true);
 
-    console.log("Submitting Form Data:", formData); // Debugging log
-
-    // 🔍 Checking if any field is empty
     for (let key in formData) {
       if (formData[key] === "" && key !== "otp") {
         setError("All fields are required!");
+        setIsLoading(false);
         return;
       }
     }
 
     if (!otpVerified) {
       setError("Please verify OTP before registering.");
+      setIsLoading(false);
       return;
     }
 
     if (!validatePassword(formData.password)) {
-      setError("Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, and one special character.");
+      setError("Password must meet complexity requirements.");
+      setIsLoading(false);
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
+      setIsLoading(false);
       return;
     }
 
@@ -141,116 +154,120 @@ const Register = () => {
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
       setError(error.response?.data?.message || "Error registering user");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-container">
-        <div className="auth-box">
-          <h2>
-            Create Account <span className="user-icon">👤</span>
-          </h2>
+    <div className="register-main-container">
+      <div className="register-left-section"></div>
 
-          <div className="social-signup">
-            <button className="google-btn" onClick={() => window.open("https://accounts.google.com/signup", "_blank")}>
-              <img src={googleIcon} alt="Google" /> Create Account with Google
-            </button>
+      <div className="register-right-section">
+        <div className="register-form-container">
+          <div className="register-form-box">
+            <h2 className="register-title">
+              Create Account <span className="register-user-icon">👤</span>
+            </h2>
 
-            <button className="facebook-btn" onClick={() => window.open("https://www.facebook.com/r.php", "_blank")}>
-              <img src={facebookIcon} alt="Facebook" /> Create Account with Facebook
-            </button>
-          </div>
+            <div className="social-signup">
+              <button className="google-btn" onClick={() => window.open("https://accounts.google.com/signup", "_blank")}>
+                <img src={googleIcon} alt="Google" /> Create Account with Google
+              </button>
 
-          <p className="or-text">or</p>
-          {error && <p className="error">{error}</p>}
-          {successMessage && <p className="success">{successMessage}</p>}
-
-          <form onSubmit={handleSubmit}>
-            <input type="text" name="name" placeholder="Enter your name" onChange={handleChange} required />
-            <input type="number" name="age" placeholder="Enter your age" onChange={handleChange} required />
-            <select name="gender" onChange={handleChange} required>
-              <option value="">Select Your Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-
-            <input
-              type="text"
-              name="username"
-              placeholder="Enter your username (no spaces)"
-              onChange={handleChange}
-              pattern="\S+"
-              title="Username should not contain spaces"
-              required
-            />
-
-            <div className="input-group">
-              <img src={emailIcon} alt="Email" className="input-icon" />
-              <input type="email" name="email" placeholder="Enter your email" onChange={handleChange} required />
+              <button className="facebook-btn" onClick={() => window.open("https://www.facebook.com/r.php", "_blank")}>
+                <img src={facebookIcon} alt="Facebook" /> Create Account with Facebook
+              </button>
             </div>
-            <button type="button" className="otp-btn" onClick={sendOTP}>Send OTP</button>
 
-            {otpSent && (
-              <div className="otp-container">
-                <input type="text" name="otp" placeholder="Enter OTP" onChange={handleChange} required />
-                <button type="button" className="verify-btn" onClick={verifyOTP}>Verify OTP</button>
+            <p className="register-or-text">or</p>
+            {error && <p className="register-error-message">{error}</p>}
+            {successMessage && <p className="register-success-message">{successMessage}</p>}
+
+            <form onSubmit={handleSubmit} className="register-form">
+              <div className="register-input-group">
+                <input type="text" name="name" placeholder="Enter your name" onChange={handleChange} required />
               </div>
-            )}
+              <div className="register-input-group">
+                <input type="number" name="age" placeholder="Enter your age" onChange={handleChange} required />
+              </div>
+              <select name="gender" onChange={handleChange} required className="register-select">
+                <option value="">Select Your Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <div className="register-input-group">
+                <input type="text" name="username" placeholder="Enter your username (no spaces)" onChange={handleChange} pattern="\S+" title="Username should not contain spaces" required />
+              </div>
+              <div className="register-input-group">
+                <img src={emailIcon} alt="Email" className="register-input-icon" />
+                <input type="email" name="email" placeholder="Enter your email" onChange={handleChange} required />
+              </div>
+              <button type="button" className="register-otp-btn" onClick={sendOTP} disabled={isLoading}>
+                {isLoading ? "Sending..." : "Send OTP"}
+              </button>
 
-             {/* Password Field */}
-            <div className="input-group">
-              <img src={lockIcon} alt="Lock" className="input-icon" />
-              <input
-                type={passwordVisible ? "text" : "password"}
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
-                onChange={handleChange}
-                required
-              />
-              <img
-                src={passwordVisible ? eyeOpen : eyeClosed}
-                alt="Toggle Password"
-                className="toggle-password"
-                onClick={() => setPasswordVisible(!passwordVisible)}
-              />
-            </div>
-            {/* Password Validation Message (Only appears when focused) */}
-            {isPasswordFocused && passwordError && <p className="error-message">{passwordError}</p>}
+              {otpSent && (
+                <div className="register-otp-container">
+                  <input type="text" name="otp" placeholder="Enter OTP" onChange={handleChange} required />
+                  <button type="button" className="register-verify-btn" onClick={verifyOTP} disabled={isLoading}>
+                    {isLoading ? "Verifying..." : "Verify OTP"}
+                  </button>
+                </div>
+              )}
 
-            {/* Confirm Password Field */}
-            <div className="input-group">
-              <img src={lockIcon} alt="Lock" className="input-icon" />
-              <input
-                type={confirmPasswordVisible ? "text" : "password"}
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onFocus={() => setIsConfirmPasswordFocused(true)}
-                onBlur={() => setIsConfirmPasswordFocused(false)}
-                onChange={handleChange}
-                required
-              />
-              <img
-                src={confirmPasswordVisible ? eyeOpen : eyeClosed}
-                alt="Toggle Confirm Password"
-                className="toggle-password"
-                onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-              />
-            </div>
-            {/* Password Match Error (Only appears when focused) */}
-            {isConfirmPasswordFocused && confirmPasswordError && <p className="error-message">{confirmPasswordError}</p>}
+              <div className="register-input-group">
+                <img src={lockIcon} alt="Lock" className="register-input-icon" />
+                <input
+                  type={passwordVisible ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
+                  onChange={handleChange}
+                  required
+                />
+                <img
+                  src={passwordVisible ? eyeOpen : eyeClosed}
+                  alt="Toggle Password"
+                  className="register-toggle-password"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                />
+              </div>
+              {isPasswordFocused && passwordError && <p className="register-password-error">{passwordError}</p>}
 
-            <p className="login-text">
-              Already registered? <a href="/login" className="login-link">Login here</a>
+              <div className="register-input-group">
+                <img src={lockIcon} alt="Lock" className="register-input-icon" />
+                <input
+                  type={confirmPasswordVisible ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onFocus={() => setIsConfirmPasswordFocused(true)}
+                  onBlur={() => setIsConfirmPasswordFocused(false)}
+                  onChange={handleChange}
+                  required
+                />
+                <img
+                  src={confirmPasswordVisible ? eyeOpen : eyeClosed}
+                  alt="Toggle Password"
+                  className="register-toggle-password"
+                  onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                />
+              </div>
+              {isConfirmPasswordFocused && confirmPasswordError && <p className="register-password-error">{confirmPasswordError}</p>}
+
+              <button type="submit" className="register-submit-btn" disabled={isLoading}>
+                {isLoading ? "Registering..." : "Register"}
+              </button>
+            </form>
+
+            <p className="register-login-text">
+              Already registered? <a href="/login" className="register-login-link">Login here</a>
             </p>
-
-            <button type="submit" className="register-btn">Register</button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

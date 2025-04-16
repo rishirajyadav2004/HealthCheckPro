@@ -116,7 +116,7 @@ const LandingPage = () => {
 
      {/* Features Section */}
 <Container id="features">
-  <h2 className="text-center mb-4">Our Key Features</h2>
+  <h2 className="text-center mb-5">Our Key Features</h2>
   <Row>
     <Col md={4}>
       <Card className="mb-4 shadow">
@@ -156,9 +156,9 @@ const LandingPage = () => {
     </Col>
     </Row>
     </Container>
-    <Container id="features">
-    <h2 className="text-center mb-4">Unlock Your Best Self!</h2>
-  <Row>
+    <Container id="features"className="py-5">
+    <h2 className="text-center mb-5">Unlock Your Best Self!</h2>
+  <Row className="mb-4">
     <Col md={4}>
             <Card className="mb-4 shadow" onClick={() => setShowBMI(true)} style={{ cursor: "pointer" }}>
               <Card.Img variant="top" src="Live Health Tracker.jpg " />
