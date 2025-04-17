@@ -8,6 +8,7 @@ const path = require("path");
 const express = require("express");
 const fs = require("fs");
 
+
 // Initialize express app first
 const app = express();
 
@@ -16,7 +17,27 @@ dotenv.config();
 
 // Middleware setup
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = [
+  'https://your-frontend.vercel.app', // Production URL
+  'http://localhost:3000'            // Local development
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
+// Your existing routes
+app.get('/api/data', (req, res) => {
+  res.json({ message: "Hello from backend!" });
+});
 
 // Database models
 const Otp = require("./models/Otp");

@@ -11,7 +11,7 @@ import ResetPassword from "./components/ResetPassword";
 import Assessment from "./components/Assessment";
 import ScorePage from "./components/ScorePage";
 import AssessmentHistory from "./components/AssessmentHistory";
-import Leaderboard from "./components/Leaderboard";
+import Leaderboard from "./components/Leaderboard1";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import UserProfilePage from "./pages/UserProfilePage";
