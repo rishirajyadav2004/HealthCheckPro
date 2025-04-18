@@ -82,7 +82,15 @@ const Register = () => {
 
     try {
       setIsLoading(true);
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/send-otp`, { email: formData.email });
+      axios.post(`${process.env.REACT_APP_API_URL}/api/auth/send-otp`, 
+        { email: formData.email },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       setSuccessMessage("OTP sent successfully! Check your email.");
       setOtpSent(true);
       setOtpVerified(false);
