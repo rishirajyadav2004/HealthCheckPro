@@ -25,7 +25,10 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -33,6 +36,7 @@ app.use(cors({
   },
   credentials: true
 }));
+
 
 // Your existing routes
 app.get('/api/data', (req, res) => {
@@ -423,8 +427,46 @@ app.post("/api/assessment/reset-progress", async (req, res) => {
 });
 
 
+// Test if backend is reachable
+app.get('/api/ping', (req, res) => {
+  res.json({ message: "Backend is reachable", timestamp: new Date() });
+});
+
+// Test email functionality
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: "Test Email",
+      text: "This is a test email from your backend"
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: "Test email sent" });
+  } catch (error) {
+    console.error("Email test failed:", error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      emailConfig: {
+        user: process.env.EMAIL_USER,
+        service: "gmail"
+      }
+    });
+  }
+});
 
 
 
-// ✅ Start Server
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
+
+
+
+// Only run this if NOT in serverless (i.e., running locally)
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+}
+
+// ✅ Export for Vercel
+module.exports = app;
