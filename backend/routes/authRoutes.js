@@ -86,6 +86,7 @@ router.post("/send-otp", async (req, res) => {
             },
         });
 
+        console.log("Attempting to send email to:", email);
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
@@ -93,11 +94,23 @@ router.post("/send-otp", async (req, res) => {
             text: `Your OTP is: ${otp}\nThis OTP is valid for 5 minutes.`,
         };
 
-        await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email sent:", info.response); // Log the SMTP response
+        
         res.json({ message: "✅ OTP sent successfully!" });
     } catch (error) {
-        console.error("❌ Error sending OTP:", error);
-        res.status(500).json({ message: "❌ Error sending OTP" });
+        console.error("❌ Full error sending OTP:", {
+            message: error.message,
+            stack: error.stack,
+            emailConfig: {
+                user: process.env.EMAIL_USER ? "Exists" : "Missing",
+                service: "gmail"
+            }
+        });
+        res.status(500).json({ 
+            message: "❌ Error sending OTP",
+            error: process.env.NODE_ENV === "development" ? error.message : null
+        });
     }
 });
 
