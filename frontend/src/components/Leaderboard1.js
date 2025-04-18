@@ -40,7 +40,7 @@ const Leaderboard = () => {
           ? '/api/leaderboard/overall' 
           : `/api/leaderboard/category/${category}`;
         
-        const response = await axios.get(`http://localhost:5000${endpoint}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}${endpoint}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

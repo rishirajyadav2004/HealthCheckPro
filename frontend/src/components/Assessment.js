@@ -70,8 +70,7 @@ const AssessmentPage = () => {
     const fetchQuestions = useCallback(async (category) => {
         try {
             setLoading(true);
-            const res = await axios.get(
-                `http://localhost:5000/api/assessment/questions/${category}`
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/assessment/questions/${category}`
             );
             setQuestions(res.data);
             setLoading(false);
@@ -157,8 +156,7 @@ useEffect(() => {
             } else {
                 // Get current progress
                 const token = sessionStorage.getItem('token');
-                const progressRes = await axios.get(
-                    `http://localhost:5000/api/assessment/current-progress`,
+                const progressRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/api/assessment/current-progress`,
                     {
                         headers: { Authorization: `Bearer ${token}` }
                     }
@@ -185,8 +183,7 @@ useEffect(() => {
                     setAnswers(progressData.answers || {});
                     
                     // Find first unanswered question in this category
-                    const questionsRes = await axios.get(
-                        `http://localhost:5000/api/assessment/questions/${categories[startCategoryIndex]}`
+                    const questionsRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/assessment/questions/${categories[startCategoryIndex]}`
                     );
                     const categoryQuestions = questionsRes.data;
                     
@@ -324,8 +321,7 @@ useEffect(() => {
             });
     
             // Submit progress
-            const response = await axios.post(
-                "http://localhost:5000/api/assessment/save-progress",
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/assessment/save-progress`,
                 {
                   currentCategory,
                   answers: answersPayload,
@@ -368,8 +364,7 @@ useEffect(() => {
                 }
                 // Save assessment history when all categories are completed
                 if (!nextCategory) {
-                    await axios.post(
-                        "http://localhost:5000/api/assessment-history",
+                    await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/assessment-history`,
                         {
                             scores: response.data.scores,
                             responses: Object.entries(answers).map(([questionId, answer]) => ({
@@ -396,7 +391,7 @@ useEffect(() => {
     const resetAssessment = async () => {
         try {
             setLoading(true);
-            await axios.post(`http://localhost:5000/api/assessment/reset-assessment/${userId}`);
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/assessment/reset-assessment/${userId}`);
             
             // Reset all state
             setCurrentCategoryIndex(0);

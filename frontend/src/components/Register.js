@@ -82,7 +82,7 @@ const Register = () => {
 
     try {
       setIsLoading(true);
-      await axios.post("http://localhost:5000/api/auth/send-otp", { email: formData.email });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/send-otp`, { email: formData.email });
       setSuccessMessage("OTP sent successfully! Check your email.");
       setOtpSent(true);
       setOtpVerified(false);
@@ -103,7 +103,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/verify-otp`, {
         email: formData.email,
         otp: formData.otp,
       });
@@ -149,7 +149,7 @@ const Register = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", formData);
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, formData);
       setSuccessMessage("Registration successful! Redirecting...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {

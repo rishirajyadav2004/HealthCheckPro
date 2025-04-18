@@ -135,8 +135,7 @@ const ScorePage = () => {
         }
 
         // If no scores in location state, fetch from API
-        const response = await axios.get(
-          `http://localhost:5000/api/assessment/scores/${storedUserId}`,
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/assessment/scores/${storedUserId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`

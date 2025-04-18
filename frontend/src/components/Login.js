@@ -29,15 +29,14 @@ const handleSubmit = async (e) => {
   setError("");
 
   try {
-    const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, formData);
     if (res.data && res.data.token && res.data.user) {
       sessionStorage.setItem("token", res.data.token);
       sessionStorage.setItem("userId", res.data.user.id);
       
       // Initialize new assessment data for new users
       try {
-        await axios.post(
-          "http://localhost:5000/api/assessment/initialize",
+        await axios.post(`${process.env.REACT_APP_API_URL}/api/assessment/initialize`,
           {},
           {
             headers: {

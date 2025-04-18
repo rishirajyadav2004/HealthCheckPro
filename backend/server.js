@@ -19,7 +19,7 @@ dotenv.config();
 app.use(express.json());
 
 const allowedOrigins = [
-  'https://your-frontend-app-name.vercel.app', // Your deployed frontend URL
+  'https://health-check-pro.vercel.app/', // Your deployed frontend URL
   'http://localhost:3000'                     // Local dev
 ];
 

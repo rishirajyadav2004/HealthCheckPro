@@ -112,10 +112,10 @@ const Dashboard = () => {
             }
 
             const [userRes, progressRes] = await Promise.all([
-                axios.get(`http://localhost:5000/api/user/${userId}`, {
+                axios.get(`${process.env.REACT_APP_API_URL}/api/auth/user/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
-                axios.get(`http://localhost:5000/api/assessment/progress/${userId}`, {
+                axios.get(`${process.env.REACT_APP_API_URL}/api/auth/assessment/progress/${userId}`, {
 
                     headers: { Authorization: `Bearer ${token}` }
                 })
@@ -189,8 +189,7 @@ const Dashboard = () => {
                 return;
             }
     
-            await axios.post(
-                'http://localhost:5000/api/assessment/reset-assessment',
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/assessment/reset-assessment`,
                 {},
                 { 
                     headers: { 
@@ -225,8 +224,7 @@ const Dashboard = () => {
     const handleContinueAssessment = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get(
-                'http://localhost:5000/api/assessment/current-progress',
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/assessment/current-progress`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }

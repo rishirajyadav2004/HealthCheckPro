@@ -15,7 +15,7 @@ useEffect(() => {
     const fetchData = async () => {
       try {
         const userId = sessionStorage.getItem('userId');
-        const response = await axios.get(`http://localhost:5000/api/assessment-history/${userId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/assessment-history/${userId}`);
         setHistories(response.data);
         setLoading(false);
       } catch (error) {
@@ -29,7 +29,7 @@ useEffect(() => {
 
   const viewDetails = async (historyId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/assessment-history/detail/${historyId}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/assessment-history/detail/${historyId}`);
       setSelectedHistory(response.data);
     } catch (error) {
       console.error('Error fetching assessment details:', error);
