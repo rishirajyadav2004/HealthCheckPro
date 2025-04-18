@@ -19,8 +19,8 @@ dotenv.config();
 app.use(express.json());
 
 const allowedOrigins = [
-  'https://your-frontend.vercel.app', // Production URL
-  'http://localhost:3000'            // Local development
+  'https://your-frontend-app-name.vercel.app', // Your deployed frontend URL
+  'http://localhost:3000'                     // Local dev
 ];
 
 app.use(cors({
@@ -109,11 +109,15 @@ app.get('/api/create-demo-data', async (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 // ✅ MongoDB Connection
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ MongoDB Connected"))
+.catch(err => {
+  console.error("❌ MongoDB Connection Error:", err);
+  process.exit(1); // Exit if DB connection fails
+});
 // ✅ Set up Nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
